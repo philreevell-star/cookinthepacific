@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maps — Cook in the Pacific: Then and Now</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean:#0b1c2a;--ocean-mid:#0f2235;
+  --parch:#f2e8cc;--parch-dim:rgba(242,232,204,0.65);--parch-mute:rgba(242,232,204,0.32);
+  --gilt:#c69030;--gilt-lt:#e0ac3a;--white:#f8f4ea;--ink:#1a1208;
+  --rule:rgba(198,144,48,0.32);--rule-lt:rgba(198,144,48,0.12);
+  --sans:'DM Sans',system-ui,sans-serif;
+  --serif:'Source Serif 4',Georgia,serif;
+  --display:'Libre Baskerville',Georgia,serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--ocean);font-family:var(--serif);color:var(--parch);min-height:100vh;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(7,15,24,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:56px;}
+.nav-logo{font-family:var(--display);font-style:italic;font-size:1.05rem;color:var(--gilt);text-decoration:none;display:flex;align-items:baseline;gap:8px;}
+.nav-logo em{font-style:normal;font-family:var(--sans);font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--parch-mute);font-weight:300;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-family:var(--sans);font-size:0.67rem;letter-spacing:0.26em;text-transform:uppercase;font-weight:500;color:rgba(242,232,204,0.75);text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--gilt);}
+.nav-subscribe{font-family:var(--sans);font-size:0.63rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;background:var(--gilt);color:var(--ocean);padding:8px 18px;text-decoration:none;transition:background 0.2s;}
+.nav-subscribe:hover{background:var(--gilt-lt);}
+
+/* PAGE HEADER */
+.page-header{padding:64px 64px 48px;border-bottom:1px solid var(--rule-lt);}
+.page-eyebrow{font-family:var(--sans);font-size:0.6rem;letter-spacing:0.42em;text-transform:uppercase;color:var(--gilt);font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.page-eyebrow::before{content:"";display:inline-block;width:20px;height:1px;background:var(--gilt);opacity:0.7;}
+.page-title{font-family:var(--display);font-size:clamp(2rem,4vw,3.5rem);font-weight:700;color:var(--white);line-height:1.0;margin-bottom:12px;}
+.page-desc{font-family:var(--serif);font-size:1rem;font-style:italic;color:var(--parch-dim);max-width:560px;line-height:1.65;}
+
+/* MAP GRID */
+.map-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;padding:2px;}
+.map-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--rule-lt);
+  padding:36px;
+  text-decoration:none;
+  transition:background 0.2s,border-color 0.2s;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.map-card:hover{background:rgba(198,144,48,0.06);border-color:rgba(198,144,48,0.3);}
+.map-card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--gilt);opacity:0;transition:opacity 0.2s;
+}
+.map-card:hover::before{opacity:1;}
+.map-card-voyage{font-family:var(--sans);font-size:0.58rem;letter-spacing:0.35em;text-transform:uppercase;color:var(--gilt);font-weight:500;margin-bottom:10px;}
+.map-card-title{font-family:var(--display);font-size:1.3rem;font-weight:700;color:var(--white);line-height:1.15;margin-bottom:10px;}
+.map-card-desc{font-family:var(--serif);font-size:0.88rem;font-style:italic;color:var(--parch-mute);line-height:1.6;flex:1;margin-bottom:20px;}
+.map-card-cta{font-family:var(--sans);font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;color:var(--gilt);display:flex;align-items:center;gap:8px;}
+.map-card-cta::after{content:"→";transition:transform 0.2s;}
+.map-card:hover .map-card-cta::after{transform:translateX(4px);}
+.map-card-ghost{
+  position:absolute;bottom:-20px;right:16px;
+  font-family:var(--display);font-size:6rem;font-weight:700;font-style:italic;
+  color:rgba(198,144,48,0.05);line-height:1;pointer-events:none;
+}
+
+/* NOTE */
+.map-note{padding:32px 64px;border-top:1px solid var(--rule-lt);}
+.map-note p{font-family:var(--sans);font-size:0.72rem;color:var(--parch-mute);line-height:1.6;max-width:600px;}
+
+@media(max-width:900px){
+  nav{padding:0 20px;}
+  .nav-links,.nav-subscribe{display:none;}
+  .page-header{padding:40px 28px 32px;}
+  .map-grid{grid-template-columns:1fr;}
+  .map-note{padding:28px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Cook in the Pacific <em>Then &amp; Now</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html#episodes">Episodes</a></li>
+    <li><a href="map.html" class="active">Maps</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="https://philreevell.com">Phil Reevell</a></li>
+  </ul>
+  <a href="index.html#subscribe" class="nav-subscribe">Follow the series</a>
+</nav>
+
+<div class="page-header">
+  <div class="page-eyebrow">Cook in the Pacific</div>
+  <h1 class="page-title">Maps of the voyages</h1>
+  <p class="page-desc">Interactive charts of Cook's three voyages across the Pacific — the routes, the landings, the islands he returned to, and the places that shaped the series.</p>
+</div>
+
+<div class="map-grid">
+
+  <a href="voyage2_arc_map.html" class="map-card">
+    <div class="map-card-ghost">II</div>
+    <div class="map-card-voyage">Second Voyage · 1772–1775</div>
+    <h2 class="map-card-title">Resolution — the Southern Arc</h2>
+    <p class="map-card-desc">The second voyage arc across the South Pacific — Resolution probing the ice, the island visits, and the route that brought Cook back to the same shores for the second time.</p>
+    <div class="map-card-cta">Open map</div>
+  </a>
+
+  <a href="cook_return_visits_v2.html" class="map-card">
+    <div class="map-card-ghost">III</div>
+    <div class="map-card-voyage">All three voyages</div>
+    <h2 class="map-card-title">Cook's Favoured Waters</h2>
+    <p class="map-card-desc">The places Cook returned to across all three voyages — extended stays, multiple visits, and the fatal anchorage at Kealakekua Bay. A map of accumulation and consequence.</p>
+    <div class="map-card-cta">Open map</div>
+  </a>
+
+  <a href="vatoa_turtle_island_annotated.html" class="map-card">
+    <div class="map-card-ghost">VI</div>
+    <div class="map-card-voyage">Second Voyage · Fiji · 1774</div>
+    <h2 class="map-card-title">Vatoa — Turtle Island</h2>
+    <p class="map-card-desc">Four lines in Cook's journal. The moment he sighted what is now Fijian territory without landing — the entry that connects the series to Suva, and to everything that followed.</p>
+    <div class="map-card-cta">Open map</div>
+  </a>
+
+  <a href="map1_lapita_expansion_3.html" class="map-card">
+    <div class="map-card-ghost">I</div>
+    <div class="map-card-voyage">Second Voyage · South Pacific · 1773–1774</div>
+    <h2 class="map-card-title">South Pacific Islands</h2>
+    <p class="map-card-desc">The island chain of the second voyage in detail — Tahiti, Tonga, the New Hebrides, and the network of peoples Cook encountered across the southern Pacific.</p>
+    <div class="map-card-cta">Open map</div>
+  </a>
+
+</div>
+
+<div class="map-note">
+  <p>Maps are interactive — click pins and locations for journal extracts and episode references. All maps built from Beaglehole's authoritative edition of Cook's journals.</p>
+</div>
+
+</body>
+</html>
