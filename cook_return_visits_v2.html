@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cook's Favoured Waters — Return Visits &amp; Extended Stays</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a120a; --parchment: #f0e6c8; --aged: #d4bc88;
+  --rust: #8b3a1a; --ocean: #1b3a4b; --gold: #c9913a; --cream: #faf4e6;
+  --panel-w: 360px;
+}
+html, body { height: 100%; font-family: 'Source Serif 4', Georgia, serif; background: var(--ink); color: var(--parchment); overflow: hidden; }
+
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 50px;
+  background: linear-gradient(to right, rgba(26,18,10,0.97), rgba(27,58,75,0.95));
+  border-bottom: 1px solid rgba(201,145,58,0.25);
+  display: flex; align-items: center; padding: 0 1.6rem; gap: 1.2rem;
+}
+.h-label { font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
+.h-sep { width: 1px; height: 16px; background: rgba(201,145,58,0.25); }
+.h-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--parchment); }
+.h-right { margin-left: auto; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(212,188,136,0.5); }
+
+#map-wrap { position: fixed; top: 50px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+#voyage-svg { width: 100%; height: 100%; display: block; }
+
+.ocean-fill   { fill: #0d1f2d; }
+.grid-line    { stroke: rgba(201,145,58,0.1); stroke-width: 0.5; fill: none; }
+.lat-label, .lon-label { font-family: 'Source Serif 4', serif; font-size: 9px; fill: rgba(201,145,58,0.28); }
+.landmass     { fill: #263318; stroke: rgba(201,145,58,0.15); stroke-width: 0.6; }
+.antimeridian { stroke: rgba(201,145,58,0.3); stroke-width: 0.7; stroke-dasharray: 3 4; fill: none; }
+
+/* Three visit-tier pin styles */
+.pin-extended { fill: var(--rust); stroke: rgba(240,230,200,0.25); stroke-width: 1.5; cursor: pointer; }
+.pin-returns  { fill: none; stroke: var(--rust); stroke-width: 2.5; cursor: pointer; }
+.pin-fatal    { fill: var(--ocean); stroke: rgba(201,145,58,0.5); stroke-width: 2.5; cursor: pointer; }
+.pin-inner    { fill: rgba(250,244,230,0.65); pointer-events: none; }
+.pin-glow     { fill: rgba(201,145,58,0.1); stroke: none; }
+.sig-ring     { fill: none; stroke: rgba(201,145,58,0.25); stroke-width: 1; stroke-dasharray: 2 2; }
+
+.pin-group { cursor: pointer; }
+.pin-group:hover .pin-extended,
+.pin-group:hover .pin-returns,
+.pin-group:hover .pin-fatal { filter: drop-shadow(0 0 7px rgba(201,145,58,0.7)); stroke: var(--gold); }
+
+.pin-label { font-family: 'Source Serif 4', serif; font-size: 10px; fill: rgba(240,230,200,0.82); pointer-events: none; }
+.pin-date  { font-size: 8.5px; fill: rgba(212,188,136,0.42); font-style: italic; pointer-events: none; }
+
+#panel {
+  position: fixed; top: 50px; right: 0; bottom: 0; width: var(--panel-w);
+  background: var(--cream); border-left: 1px solid rgba(26,18,10,0.15);
+  transform: translateX(100%); transition: transform 0.32s cubic-bezier(0.22,0.61,0.36,1);
+  overflow-y: auto; z-index: 150; color: var(--ink);
+}
+#panel.open { transform: translateX(0); }
+.p-close { position: sticky; top: 0; display: flex; justify-content: flex-end; padding: 0.8rem 0.9rem 0; background: var(--cream); z-index: 10; }
+.p-close-btn { width: 28px; height: 28px; border: 1px solid rgba(26,18,10,0.2); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink); font-size: 0.8rem; transition: border-color 0.2s, color 0.2s; }
+.p-close-btn:hover { border-color: var(--rust); color: var(--rust); }
+.p-body { padding: 0.4rem 1.5rem 2.5rem; }
+.p-type { font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+.p-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.2; color: var(--ink); margin-bottom: 0.2rem; }
+.p-date-txt { font-size: 0.78rem; font-style: italic; color: rgba(26,18,10,0.42); padding-bottom: 0.9rem; margin-bottom: 0.9rem; border-bottom: 1px solid rgba(26,18,10,0.09); }
+
+/* Visit history — replaces significance bar */
+.p-visits-label { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,10,0.3); margin-bottom: 0.4rem; }
+.p-visit-row { display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem; }
+.p-visit-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.p-visit-text { font-size: 0.76rem; line-height: 1.42; color: rgba(26,18,10,0.58); }
+.p-visit-text strong { color: var(--ink); }
+.p-visit-total { font-size: 0.68rem; font-style: italic; color: rgba(26,18,10,0.35); margin-top: 0.3rem; margin-bottom: 1rem; }
+
+.p-section-label { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,10,0.3); margin-top: 1rem; margin-bottom: 0.4rem; }
+.p-quote { font-family: 'IM Fell English', serif; font-size: 0.9rem; font-style: italic; line-height: 1.75; color: rgba(26,18,10,0.72); border-left: 2px solid var(--gold); padding-left: 0.85rem; }
+.p-notes { font-size: 0.8rem; line-height: 1.68; color: rgba(26,18,10,0.55); }
+.p-context-box { margin-top: 0.9rem; padding: 0.6rem 0.8rem; background: rgba(201,145,58,0.06); border: 1px solid rgba(201,145,58,0.18); }
+.p-context-lbl { font-size: 0.48rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(201,145,58,0.7); display: block; margin-bottom: 0.22rem; }
+.p-context-txt { font-size: 0.74rem; font-style: italic; line-height: 1.55; color: rgba(26,18,10,0.48); }
+
+#legend {
+  position: fixed; bottom: 1.2rem; left: 1.2rem; z-index: 120;
+  background: rgba(8,16,22,0.9); border: 1px solid rgba(201,145,58,0.18);
+  padding: 0.7rem 1rem; backdrop-filter: blur(4px);
+}
+.leg-title { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(201,145,58,0.45); margin-bottom: 0.5rem; }
+.leg-row { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.28rem; }
+.leg-swatch-ext   { width:12px; height:12px; border-radius:50%; background:var(--rust); flex-shrink:0; }
+.leg-swatch-ret   { width:12px; height:12px; border-radius:50%; border:2.5px solid var(--rust); flex-shrink:0; }
+.leg-swatch-fatal { width:12px; height:12px; border-radius:50%; background:var(--ocean); border:2px solid rgba(201,145,58,0.5); flex-shrink:0; }
+.leg-text { font-size: 0.72rem; color: rgba(212,188,136,0.62); }
+.leg-sub  { font-size: 0.62rem; font-style: italic; color: rgba(212,188,136,0.35); padding-left: 18px; margin-top: 0.05rem; margin-bottom: 0.18rem; }
+
+#seq-nav { position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 120; display: flex; gap: 0.4rem; }
+.seq-btn { background: rgba(8,16,22,0.9); border: 1px solid rgba(201,145,58,0.22); padding: 0.4rem 0.9rem; font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(212,188,136,0.62); cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); }
+.seq-btn:hover { background: var(--rust); color: var(--cream); border-color: var(--rust); }
+</style>
+
+<style>
+.cook-nav{position:sticky;top:0;z-index:9999;background:rgba(7,15,24,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(198,144,48,0.32);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:52px;}
+.cook-nav-logo{font-family:'Playfair Display','Libre Baskerville',Georgia,serif;font-style:italic;font-size:1rem;color:#c69030;text-decoration:none;display:flex;align-items:baseline;gap:8px;}
+.cook-nav-logo em{font-style:normal;font-family:system-ui,sans-serif;font-size:0.58rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(242,232,204,0.32);font-weight:300;}
+.cook-nav-links{display:flex;gap:28px;list-style:none;}
+.cook-nav-links a{font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;color:rgba(242,232,204,0.7);text-decoration:none;transition:color 0.2s;}
+.cook-nav-links a:hover,.cook-nav-links a.active{color:#c69030;}
+@media(max-width:700px){.cook-nav{padding:0 16px;}.cook-nav-links{display:none;}}
+</style>
+</head>
+<body>
+<nav class="cook-nav">
+  <a href="index.html" class="cook-nav-logo">Cook in the Pacific <em>Then &amp; Now</em></a>
+  <ul class="cook-nav-links">
+    <li><a href="index.html#episodes">Episodes</a></li>
+    <li><a href="map.html" class="active">Maps</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="https://philreevell.com">Phil Reevell</a></li>
+  </ul>
+</nav>
+
+
+<header>
+  <span class="h-label">Cook in the Pacific</span>
+  <span class="h-sep"></span>
+  <span class="h-title">Favoured Waters — Return Visits &amp; Extended Stays</span>
+  <span class="h-right">Click any pin to open entry</span>
+</header>
+
+<div id="map-wrap">
+<!--
+PROJECTION — same as Voyage 3 map
+  Longitude unwrapped 170–215°, span 45°, 1000px usable → 22.22 px/°
+  x = (lon_unwrapped - 170) * 22.22 + 60
+
+  Latitude 45°S–27°N, span 72°, 565px usable → 7.85 px/°
+  y = (27 - lat) * 7.85 + 30
+
+  Computed:
+  Matavai   -17.5,-149.5  unwrap=210.5  x=960  y=379
+  Raiatea   -16.8,-151.4  unwrap=208.6  x=917  y=374
+  QCS       -41.2, 174.3  unwrap=174.3  x=155  y=565
+  Tonga     -21.1,-175.3  unwrap=184.7  x=388  y=408
+  Nomuka    -20.2,-174.8  unwrap=185.2  x=398  y=401
+  Kealakek  +19.5,-155.9  unwrap=204.1  x=817  y= 89
+-->
+<svg id="voyage-svg" viewBox="0 0 1100 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<defs>
+  <filter id="pglow" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur stdDeviation="4" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<!-- Ocean -->
+<rect width="1100" height="620" class="ocean-fill"/>
+
+<!-- Lat grid -->
+<line class="grid-line" x1="60" y1="85"  x2="1080" y2="85"/>
+<line class="grid-line" x1="60" y1="163" x2="1080" y2="163"/>
+<line class="grid-line" x1="60" y1="242" x2="1080" y2="242"/>
+<line class="grid-line" x1="60" y1="320" x2="1080" y2="320"/>
+<line class="grid-line" x1="60" y1="399" x2="1080" y2="399"/>
+<line class="grid-line" x1="60" y1="477" x2="1080" y2="477"/>
+<line class="grid-line" x1="60" y1="556" x2="1080" y2="556"/>
+<text class="lat-label" x="56" y="88"  text-anchor="end">20°N</text>
+<text class="lat-label" x="56" y="166" text-anchor="end">10°N</text>
+<text class="lat-label" x="56" y="245" text-anchor="end">0°</text>
+<text class="lat-label" x="56" y="323" text-anchor="end">10°S</text>
+<text class="lat-label" x="56" y="402" text-anchor="end">20°S</text>
+<text class="lat-label" x="56" y="480" text-anchor="end">30°S</text>
+<text class="lat-label" x="56" y="559" text-anchor="end">40°S</text>
+
+<!-- Lon grid -->
+<line class="grid-line" x1="171" y1="25" x2="171" y2="600"/>
+<line class="grid-line" x1="282" y1="25" x2="282" y2="600"/>
+<line class="grid-line" x1="393" y1="25" x2="393" y2="600"/>
+<line class="grid-line" x1="727" y1="25" x2="727" y2="600"/>
+<line class="grid-line" x1="838" y1="25" x2="838" y2="600"/>
+<line class="grid-line" x1="949" y1="25" x2="949" y2="600"/>
+<text class="lon-label" x="171" y="22" text-anchor="middle">175°E</text>
+<text class="lon-label" x="282" y="22" text-anchor="middle">180°</text>
+<text class="lon-label" x="393" y="22" text-anchor="middle">175°W</text>
+<text class="lon-label" x="727" y="22" text-anchor="middle">160°W</text>
+<text class="lon-label" x="838" y="22" text-anchor="middle">155°W</text>
+<text class="lon-label" x="949" y="22" text-anchor="middle">150°W</text>
+
+<!-- Antimeridian -->
+<line class="antimeridian" x1="282" y1="25" x2="282" y2="600"/>
+<text x="285" y="42" font-family="'Source Serif 4',serif" font-size="8" fill="rgba(201,145,58,0.3)" font-style="italic">180°</text>
+
+<!-- Tropics -->
+<line x1="60" y1="57"  x2="1080" y2="57"  stroke="rgba(201,145,58,0.07)" stroke-width="0.5" stroke-dasharray="2 6"/>
+<text x="62" y="54" font-family="'Source Serif 4',serif" font-size="7.5" fill="rgba(201,145,58,0.2)" font-style="italic">Tropic of Cancer</text>
+<line x1="60" y1="426" x2="1080" y2="426" stroke="rgba(201,145,58,0.07)" stroke-width="0.5" stroke-dasharray="2 6"/>
+<text x="62" y="423" font-family="'Source Serif 4',serif" font-size="7.5" fill="rgba(201,145,58,0.2)" font-style="italic">Tropic of Capricorn</text>
+
+<!-- ── LAND MASSES ── -->
+
+<!-- New Zealand North Island -->
+<path class="landmass" d="M155,533 L171,520 L192,512 L210,516 L228,510 L238,509 L235,530 L222,548 L205,558 L188,555 L172,545 L160,548 Z" opacity="0.8"/>
+<!-- NZ South Island stub -->
+<path class="landmass" d="M104,564 L130,558 L155,565 L152,590 L132,600 L108,598 Z" opacity="0.6"/>
+<!-- Australia eastern tip stub -->
+<path class="landmass" d="M60,310 L72,295 L78,330 L72,380 L64,430 L66,490 L60,520 Z" opacity="0.45"/>
+<!-- Tonga -->
+<ellipse class="landmass" cx="384" cy="408" rx="4" ry="9"/>
+<ellipse class="landmass" cx="398" cy="401" rx="3" ry="5"/>
+<!-- Fiji -->
+<ellipse class="landmass" cx="238" cy="382" rx="11" ry="7"/>
+<ellipse class="landmass" cx="260" cy="371" rx="7"  ry="4"/>
+<!-- Society Islands -->
+<ellipse class="landmass" cx="960" cy="379" rx="7" ry="5"/>
+<ellipse class="landmass" cx="949" cy="376" rx="3" ry="3"/>
+<ellipse class="landmass" cx="917" cy="374" rx="5" ry="4"/>
+<!-- Hawaii -->
+<ellipse class="landmass" cx="827" cy="89"  rx="12" ry="8"/>
+<ellipse class="landmass" cx="807" cy="79"  rx="6"  ry="4"/>
+<ellipse class="landmass" cx="773" cy="73"  rx="6"  ry="5"/>
+<ellipse class="landmass" cx="738" cy="70"  rx="5"  ry="4"/>
+
+<!-- ── PINS ── -->
+
+<!-- QCS x=155 y=565 — extended, 5 visits -->
+<g class="pin-group" onclick="openPanel('qcs')">
+  <circle cx="155" cy="565" r="18" class="pin-glow"/>
+  <circle cx="155" cy="565" r="14" class="sig-ring"/>
+  <circle cx="155" cy="565" r="8"  class="pin-extended" filter="url(#pglow)"/>
+  <circle cx="155" cy="565" r="3.5" class="pin-inner"/>
+  <text class="pin-label" x="167" y="559">Queen Charlotte Sound</text>
+  <text class="pin-date"  x="167" y="569">3 voyages · 5 visits · ~80 days</text>
+</g>
+
+<!-- Tonga x=388 y=408 — extended, 3 visits -->
+<g class="pin-group" onclick="openPanel('tonga')">
+  <circle cx="388" cy="408" r="18" class="pin-glow"/>
+  <circle cx="388" cy="408" r="14" class="sig-ring"/>
+  <circle cx="388" cy="408" r="8"  class="pin-extended" filter="url(#pglow)"/>
+  <circle cx="388" cy="408" r="3.5" class="pin-inner"/>
+  <text class="pin-label" x="400" y="403">Tonga</text>
+  <text class="pin-date"  x="400" y="413">2 voyages · 3 visits · ~82 days</text>
+</g>
+
+<!-- Nomuka x=398 y=401 — returns, 2 visits — sits just above Tonga -->
+<g class="pin-group" onclick="openPanel('nomuka')">
+  <circle cx="418" cy="385" r="13" class="pin-glow"/>
+  <circle cx="418" cy="385" r="6"  class="pin-returns"/>
+  <text class="pin-label" x="428" y="381">Nomuka</text>
+  <text class="pin-date"  x="428" y="390">2 voyages · 2 visits</text>
+</g>
+
+<!-- Raiatea x=917 y=374 — returns, 2 visits -->
+<g class="pin-group" onclick="openPanel('raiatea')">
+  <circle cx="917" cy="374" r="13" class="pin-glow"/>
+  <circle cx="917" cy="374" r="6"  class="pin-returns"/>
+  <text class="pin-label" x="885" y="362">Raiatea</text>
+  <text class="pin-date"  x="885" y="371">Tupaia's home · 2 voyages</text>
+</g>
+
+<!-- Matavai Bay x=960 y=379 — extended, 4 visits, two sig rings -->
+<g class="pin-group" onclick="openPanel('matavai')">
+  <circle cx="960" cy="379" r="24" class="pin-glow"/>
+  <circle cx="960" cy="379" r="21" class="sig-ring"/>
+  <circle cx="960" cy="379" r="14" class="sig-ring" style="stroke-dasharray:none;stroke-width:0.5;stroke-opacity:0.15"/>
+  <circle cx="960" cy="379" r="9"  class="pin-extended" filter="url(#pglow)"/>
+  <circle cx="960" cy="379" r="4"  class="pin-inner"/>
+  <text class="pin-label" x="973" y="372" font-size="11" fill="rgba(240,230,200,0.92)">Matavai Bay, Tahiti</text>
+  <text class="pin-date"  x="973" y="383">3 voyages · 4 visits · ~140 days</text>
+</g>
+
+<!-- Kealakekua x=817 y=89 — fatal, two sig rings -->
+<g class="pin-group" onclick="openPanel('kealakekua')">
+  <circle cx="817" cy="89" r="24" class="pin-glow"/>
+  <circle cx="817" cy="89" r="21" class="sig-ring"/>
+  <circle cx="817" cy="89" r="14" class="sig-ring" style="stroke-dasharray:none;stroke-width:0.5;stroke-opacity:0.15"/>
+  <circle cx="817" cy="89" r="9"  class="pin-fatal" filter="url(#pglow)"/>
+  <circle cx="817" cy="89" r="3.5" class="pin-inner"/>
+  <text class="pin-label" x="830" y="82" font-size="11" fill="rgba(240,230,200,0.92)">Kealakekua Bay</text>
+  <text class="pin-date"  x="830" y="93">Cook killed · Feb 1779</text>
+</g>
+
+</svg>
+</div>
+
+<!-- Panel -->
+<div id="panel">
+  <div class="p-close"><button class="p-close-btn" id="p-close-btn">&#x2715;</button></div>
+  <div class="p-body">
+    <div class="p-type" id="p-type"></div>
+    <div class="p-name" id="p-name"></div>
+    <div class="p-date-txt" id="p-date-txt"></div>
+    <div class="p-visits-label">Visit History</div>
+    <div id="p-visits-list"></div>
+    <div class="p-visit-total" id="p-visit-total"></div>
+    <div class="p-section-label">Cook's Journal — First Encounter</div>
+    <div class="p-quote" id="p-quote-first"></div>
+    <div id="p-return-block">
+      <div class="p-section-label">Cook's Journal — On Return</div>
+      <div class="p-quote" id="p-quote-return"></div>
+    </div>
+    <div class="p-section-label" style="margin-top:1rem">The Arc</div>
+    <div class="p-notes" id="p-notes"></div>
+    <div class="p-context-box">
+      <span class="p-context-lbl">Series context</span>
+      <span class="p-context-txt" id="p-context"></span>
+    </div>
+    <div style="font-size:0.62rem;font-style:italic;color:rgba(26,18,10,0.28);margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid rgba(26,18,10,0.07)">J.C. Beaglehole (ed.), <em>The Journals of Captain James Cook</em>, Vols. I–III. Hakluyt Society.</div>
+  </div>
+</div>
+
+<div id="legend">
+  <div class="leg-title">Visit Type · Three Voyages</div>
+  <div class="leg-row"><div class="leg-swatch-ext"></div><div class="leg-text">Extended stay (weeks–months)</div></div>
+  <div class="leg-sub">Three or more visits</div>
+  <div class="leg-row"><div class="leg-swatch-ret"></div><div class="leg-text">Return visit</div></div>
+  <div class="leg-sub">Two visits across voyages</div>
+  <div class="leg-row"><div class="leg-swatch-fatal"></div><div class="leg-text">Kealakekua Bay — Cook killed</div></div>
+</div>
+
+<div id="seq-nav">
+  <button class="seq-btn" id="btn-prev">&#8592; Prev</button>
+  <button class="seq-btn" id="btn-next">Next &#8594;</button>
+</div>
+
+<script>
+const V1 = '#1b3a4b';
+const V2 = '#8b3a1a';
+const V3 = '#2a5a3a';
+
+const LOCATIONS = [
+  { id:'matavai', name:'Matavai Bay, Tahiti', tier:'extended',
+    typeLabel:'Extended stay — four visits, three voyages',
+    totalDays:'~140 days · most-visited anchorage in the journals',
+    visits:[
+      {label:'Voyage I · April–July 1769',                   days:'~90 days', dot:V1},
+      {label:'Voyage II · August–September 1773',            days:'~30 days', dot:V2},
+      {label:'Voyage II (return) · April–May 1774',          days:'~20 days', dot:V2},
+      {label:'Voyage III · August–September 1777',           days:'~14 days', dot:V3},
+    ],
+    quoteFirst:'the whole face of the Country wore a most delightfull aspect.',
+    quoteReturn:'The Natives visited us with great freedom, and without expressing the least sign of mistrust or fear… they expressed great joy at seeing us.',
+    notes:'The place Cook returned to more than anywhere else. Matavai Bay was the anchorage of the Transit of Venus in 1769 and became, through the Hawkesworth account and the Hodges paintings, the European image of the Pacific. By the third voyage Cook knew where the fresh water ran, who the chiefs were, and what was worth trading. The relationship had changed: Tahitians had learned to drive harder bargains.',
+    context:'The LMS sent the Duff to Matavai Bay in 1797 because Cook\'s journals described the anchorage so precisely that the missionaries could navigate directly to it. The bay Cook used as a working harbour became the entry point for the chain of consequence traced in Episode 8.'
+  },
+  { id:'raiatea', name:'Raiatea — Tupaia\'s Home', tier:'returns',
+    typeLabel:'Return visit — two voyages',
+    totalDays:'~25 days across two voyages',
+    visits:[
+      {label:'Voyage I · July 1769',                              days:'~8 days',  dot:V1},
+      {label:'Voyage II · August–September 1773 & 1774',         days:'~17 days', dot:V2},
+    ],
+    quoteFirst:'took possession of the Island and the adjacent lands in the name and for the use of His Majesty King George the Third.',
+    quoteReturn:'The Inhabitants of these Islands are the most Friendly, hospitable and Courteous people I ever met with.',
+    notes:'Tupaia\'s home island — the island he left with Cook in July 1769 and never returned to. Cook came back twice without him. The possession ceremony of 1769 is recorded in the same breath as praise for the people.',
+    context:'Episode 3 argument: the charts as possession. The Raiatea entry is one of the clearest examples of the "with the consent of the natives" clause not in action.'
+  },
+  { id:'qcs', name:'Queen Charlotte Sound, New Zealand', tier:'extended',
+    typeLabel:'Extended stay — five visits, three voyages',
+    totalDays:'~80 days across five visits',
+    visits:[
+      {label:'Voyage I · January–February 1770',    days:'~23 days', dot:V1},
+      {label:'Voyage II · May–June 1773',           days:'~19 days', dot:V2},
+      {label:'Voyage II · October–November 1773',   days:'~16 days', dot:V2},
+      {label:'Voyage II · October 1774',            days:'~11 days', dot:V2},
+      {label:'Voyage III · February 1777',          days:'~10 days', dot:V3},
+    ],
+    quoteFirst:'The country about this Sound is exceedingly well wooded; fine timber trees, some of them very large. The soil in many places is good and capable of producing any kind of grain.',
+    quoteReturn:'The Natives visited us with great freedom, and without expressing the least sign of mistrust or fear, tho\' some of their late conduct had given us reason to think they were not altogether without apprehensions.',
+    notes:'Cook\'s principal base in New Zealand across three voyages. By the third voyage he had spent nearly eighty days at this anchorage. The relationship was the most sustained of any in the journals — and the most complicated, particularly after ten Adventure crew members were killed here in 1773 while Cook was elsewhere. His choice not to seek retribution defined his deterrence thinking.',
+    context:'Hampton Sides traces the logic of Cook\'s deterrence policy from Queen Charlotte Sound through Nomuka to Kealakekua Bay — the policy that produced the journals\' warmest entries for Māori was the same policy that ended his life.'
+  },
+  { id:'tonga', name:'Tonga — Friendly Islands', tier:'extended',
+    typeLabel:'Extended stay — three visits, two voyages',
+    totalDays:'~82 days · named the Friendly Islands October 1773',
+    visits:[
+      {label:'Voyage II · October 1773 (Tongatapu)',            days:'~5 days',  dot:V2},
+      {label:'Voyage II · June–July 1774 (Nomuka)',             days:'~7 days',  dot:V2},
+      {label:'Voyage III · May–July 1777 (Tongatapu & Haʻapai)',days:'~70 days', dot:V3},
+    ],
+    quoteFirst:'The friendly and peaceable behaviour of these people gave this group the name of the Friendly Islands, and they deserve the name.',
+    quoteReturn:'We were received with every demonstration of friendship: the King came off in his canoe and conducted us to the shore. I never saw greater festivity or more apparent marks of joy than were testified by these people on our landing.',
+    notes:'Cook named the Tongan islands the Friendly Islands in 1773. Tongan oral tradition records that the chiefs had been planning to kill him that same evening but could not agree on a method in time. On the third voyage, Finau considered it again. The "Friendly Islands" name encoded the European view so completely that the Tongan perspective remained invisible until Mariner\'s Account in 1805.',
+    context:'The clearest single example in the series of the gap between the journal and the shore. The naming entry and the oral tradition, held against each other, are the argument the series makes in Episodes 5 and 6.'
+  },
+  { id:'nomuka', name:'Nomuka (Annamocka)', tier:'returns',
+    typeLabel:'Return visit — two voyages',
+    totalDays:'~12 days across two visits',
+    visits:[
+      {label:'Voyage II · 27–29 June 1774', days:'3 days', dot:V2},
+      {label:'Voyage III · May 1777',       days:'~9 days', dot:V3},
+    ],
+    quoteFirst:'My lenity in this affair and the easy manner they had obtained this gun which they thought secure in their possession encouraged them to commit acts of greater violence, as will soon appear.',
+    quoteReturn:'The people conducted themselves with great propriety and we trafficked with them without any disturbance.',
+    notes:'The 1774 visit produced the series\' most humanising journal entry — the old woman, the flight to the boat — and one of its most troubling: the shooting over a stolen stanchion. The 1777 return was uneventful. Cook noted the people\'s "great propriety." No entry in the journal connects the two visits.',
+    context:'Episode 6\'s dramatic centre: three days, a gun stolen, a shooting, a public humiliation. The 1777 return — peaceful, unconnected in the journal — is the episode\'s silent counterpoint.'
+  },
+  { id:'kealakekua', name:'Kealakekua Bay, Hawaiʻi', tier:'fatal',
+    typeLabel:'Return visit — two visits within one voyage',
+    totalDays:'~90 days total · Cook killed on return',
+    visits:[
+      {label:'Voyage III · January 1778 (first contact, Kauaʻi)', days:'~14 days', dot:V3},
+      {label:'Voyage III · Nov 1778 – Feb 1779 (Kealakekua)',     days:'~80 days', dot:V3},
+    ],
+    quoteFirst:'How shall we account for this Nation spreading itself so far over this vast ocean? We find them from New Zealand to the South, to these islands to the North, and from Easter Island to the Hebrides.',
+    quoteReturn:'He was struck with a club and then stabbed; he fell with his face in the water and immediately expired. Thus fell our great and excellent commander.',
+    notes:'Cook arrived at Kealakekua Bay during the Makahiki festival and was received with extraordinary ceremony. The ships departed — the foremast cracked — Cook returned outside the festival season. A cutter stolen. The hostage attempt. The same deterrence tactic used at Nomuka five years earlier. This time it failed. The final journal entry is by Lieutenant King. Cook could no longer write it himself.',
+    context:'The endpoint of the series\' arc. Kealakekua Bay is where the logic of deterrence that runs through every return visit reaches its conclusion.'
+  },
+];
+
+let currentIdx = -1;
+
+function openPanel(id) {
+  const idx = LOCATIONS.findIndex(l => l.id === id);
+  if (idx === -1) return;
+  currentIdx = idx;
+  const loc = LOCATIONS[idx];
+
+  document.getElementById('p-type').textContent = loc.typeLabel;
+  document.getElementById('p-name').textContent = loc.name;
+  document.getElementById('p-date-txt').textContent = loc.totalDays;
+
+  // Visit history
+  const list = document.getElementById('p-visits-list');
+  list.innerHTML = '';
+  loc.visits.forEach(v => {
+    const row = document.createElement('div'); row.className = 'p-visit-row';
+    const dot = document.createElement('div'); dot.className = 'p-visit-dot'; dot.style.background = v.dot;
+    const txt = document.createElement('div'); txt.className = 'p-visit-text';
+    txt.innerHTML = `<strong>${v.label}</strong> · ${v.days}`;
+    row.appendChild(dot); row.appendChild(txt); list.appendChild(row);
+  });
+  document.getElementById('p-visit-total').textContent = loc.totalDays;
+
+  document.getElementById('p-quote-first').textContent = '\u201c' + loc.quoteFirst + '\u201d';
+
+  const retBlock = document.getElementById('p-return-block');
+  if (loc.quoteReturn) {
+    retBlock.style.display = 'block';
+    document.getElementById('p-quote-return').textContent = '\u201c' + loc.quoteReturn + '\u201d';
+  } else {
+    retBlock.style.display = 'none';
+  }
+
+  document.getElementById('p-notes').textContent   = loc.notes;
+  document.getElementById('p-context').textContent = loc.context;
+
+  document.getElementById('panel').classList.add('open');
+}
+
+document.getElementById('p-close-btn').addEventListener('click', () => document.getElementById('panel').classList.remove('open'));
+document.getElementById('btn-next').addEventListener('click', () => openPanel(LOCATIONS[(currentIdx+1)%LOCATIONS.length].id));
+document.getElementById('btn-prev').addEventListener('click', () => openPanel(LOCATIONS[(currentIdx-1+LOCATIONS.length)%LOCATIONS.length].id));
+window.addEventListener('load', () => openPanel('matavai'));
+</script>
+</body>
+</html>
