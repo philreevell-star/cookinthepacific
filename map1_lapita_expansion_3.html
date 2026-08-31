@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Second Voyage — South Pacific Islands 1773–1774</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Cormorant+SC:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:       #1a120a;
+  --parchment: #f0e6c8;
+  --aged:      #c8a96e;
+  --rust:      #8b3a1a;
+  --ocean:     #1b3a4b;
+  --gold:      #b8882a;
+  --cream:     #faf4e6;
+  --panel-w:   340px;
+}
+
+html, body { height: 100%; overflow: hidden; font-family: 'Cormorant Garamond', Georgia, serif; }
+
+/* ── HEADER ── */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: 52px;
+  background: linear-gradient(to right, rgba(26,18,10,0.97), rgba(27,58,75,0.97));
+  border-bottom: 1px solid rgba(184,136,42,0.35);
+  display: flex; align-items: center; padding: 0 1.5rem;
+  gap: 1.2rem;
+}
+.h-eyebrow {
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.62rem; letter-spacing: 0.22em;
+  color: var(--gold); text-transform: uppercase; white-space: nowrap;
+}
+.h-sep { width: 1px; height: 18px; background: rgba(184,136,42,0.3); flex-shrink: 0; }
+.h-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.05rem; font-style: italic;
+  color: var(--parchment); white-space: nowrap;
+}
+.h-voyage {
+  margin-left: auto;
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.58rem; letter-spacing: 0.18em;
+  color: rgba(200,169,110,0.65);
+}
+
+/* ── MAP ── */
+#map {
+  position: fixed;
+  top: 52px; left: 0; right: 0; bottom: 0;
+}
+
+/* ── PANEL ── */
+#panel {
+  position: fixed;
+  top: 52px; right: 0; bottom: 0;
+  width: var(--panel-w);
+  background: var(--cream);
+  border-left: 1px solid rgba(26,18,10,0.12);
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.22,0.61,0.36,1);
+  overflow-y: auto;
+  z-index: 900;
+  display: flex; flex-direction: column;
+}
+#panel.open { transform: translateX(0); }
+
+.p-close {
+  position: sticky; top: 0; right: 0;
+  align-self: flex-end;
+  margin: 0.75rem 0.75rem 0 0;
+  width: 28px; height: 28px;
+  border: 1px solid rgba(26,18,10,0.2);
+  background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); font-size: 0.8rem;
+  transition: border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.p-close:hover { border-color: var(--rust); color: var(--rust); }
+
+.p-body { padding: 0 1.4rem 2rem; }
+
+.p-type {
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.55rem; letter-spacing: 0.2em;
+  color: var(--gold); margin-bottom: 0.3rem;
+}
+.p-name {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.35rem; line-height: 1.2;
+  color: var(--ink); margin-bottom: 0.15rem;
+}
+.p-date {
+  font-size: 0.75rem; font-style: italic;
+  color: rgba(26,18,10,0.45);
+  padding-bottom: 0.9rem; margin-bottom: 0.9rem;
+  border-bottom: 1px solid rgba(26,18,10,0.09);
+}
+
+/* significance bar */
+.p-sig-wrap { margin-bottom: 1rem; }
+.p-sig-label {
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.52rem; letter-spacing: 0.18em;
+  color: rgba(26,18,10,0.32); margin-bottom: 0.3rem;
+}
+.p-sig-bar {
+  height: 4px; border-radius: 2px;
+  background: rgba(26,18,10,0.08);
+  position: relative; overflow: hidden;
+}
+.p-sig-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(to right, var(--gold), var(--rust));
+  transition: width 0.6s ease;
+}
+.p-sig-meta {
+  font-size: 0.68rem; font-style: italic;
+  color: rgba(26,18,10,0.42); margin-top: 0.28rem;
+}
+
+.p-lbl {
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.52rem; letter-spacing: 0.18em;
+  color: rgba(26,18,10,0.32);
+  margin-top: 1rem; margin-bottom: 0.3rem;
+}
+.p-quote {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.9rem; font-style: italic;
+  line-height: 1.75; color: rgba(26,18,10,0.72);
+  border-left: 2px solid var(--gold);
+  padding-left: 0.85rem;
+}
+.p-notes {
+  font-size: 0.8rem; line-height: 1.65;
+  color: rgba(26,18,10,0.58);
+}
+.p-src {
+  font-size: 0.62rem; font-style: italic;
+  color: rgba(26,18,10,0.28);
+  margin-top: 1.2rem; padding-top: 0.8rem;
+  border-top: 1px solid rgba(26,18,10,0.07);
+}
+
+/* ── AUDIO SECTION ── */
+.p-audio { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px solid rgba(26,18,10,0.09); }
+.p-audio-item { margin-bottom: 1.1rem; }
+.p-audio-extract-label {
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.52rem; letter-spacing: 0.18em;
+  color: rgba(26,18,10,0.32); margin-bottom: 0.18rem;
+}
+.p-audio-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.88rem; color: var(--ink);
+  margin-bottom: 0.22rem; line-height: 1.3;
+}
+.p-audio-note {
+  font-size: 0.72rem; font-style: italic;
+  color: rgba(26,18,10,0.5); line-height: 1.52;
+  margin-bottom: 0.5rem;
+}
+.p-audio-pending {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.5rem 0.7rem;
+  background: rgba(184,136,42,0.07);
+  border: 1px solid rgba(184,136,42,0.22);
+  border-radius: 2px;
+  font-size: 0.7rem; font-style: italic;
+  color: rgba(26,18,10,0.38);
+}
+.p-audio-pending::before { content: '🎙'; font-style: normal; opacity: 0.55; }
+audio.p-player {
+  width: 100%; height: 30px;
+  accent-color: var(--gold);
+}
+.audio-rule { border: none; border-top: 1px dashed rgba(26,18,10,0.1); margin: 0.8rem 0; }
+
+/* ── LEGEND ── */
+#legend {
+  position: fixed; bottom: 1.2rem; left: 1.2rem;
+  z-index: 800;
+  background: rgba(250,244,230,0.93);
+  border: 1px solid rgba(26,18,10,0.14);
+  padding: 0.7rem 1rem;
+  font-family: 'Cormorant Garamond', serif;
+}
+.leg-title {
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.55rem; letter-spacing: 0.18em;
+  color: rgba(26,18,10,0.38); margin-bottom: 0.5rem;
+}
+.leg-row { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.3rem; }
+.leg-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.leg-text { font-size: 0.75rem; color: rgba(26,18,10,0.62); }
+
+/* ── SEQUENCE NAV ── */
+#seq-nav {
+  position: fixed; bottom: 1.2rem; right: 1.2rem;
+  z-index: 800;
+  display: flex; gap: 0.4rem;
+}
+.seq-btn {
+  background: rgba(250,244,230,0.93);
+  border: 1px solid rgba(26,18,10,0.18);
+  padding: 0.4rem 0.75rem;
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.6rem; letter-spacing: 0.12em;
+  color: rgba(26,18,10,0.55); cursor: pointer;
+  transition: all 0.2s;
+}
+.seq-btn:hover { background: var(--ink); color: var(--gold); border-color: var(--ink); }
+
+/* ── LEAFLET OVERRIDES ── */
+.leaflet-container { font-family: 'Cormorant Garamond', Georgia, serif; }
+.leaflet-control-zoom a {
+  font-family: serif !important;
+  color: var(--ink) !important;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: 2px;
+  background: var(--cream);
+  border: 1px solid rgba(26,18,10,0.18);
+  box-shadow: 0 4px 20px rgba(26,18,10,0.18);
+}
+.leaflet-popup-tip { background: var(--cream); }
+.leaflet-popup-content {
+  margin: 0.9rem 1rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.85rem; line-height: 1.5;
+  color: var(--ink);
+}
+.lp-name {
+  font-family: 'IM Fell English', serif;
+  font-size: 1rem; margin-bottom: 0.15rem;
+}
+.lp-date { font-style: italic; color: rgba(26,18,10,0.45); font-size: 0.75rem; margin-bottom: 0.4rem; }
+.lp-open {
+  display: inline-block; margin-top: 0.4rem;
+  font-family: 'Cormorant SC', serif;
+  font-size: 0.6rem; letter-spacing: 0.14em;
+  color: var(--gold); cursor: pointer;
+  border-bottom: 1px solid rgba(184,136,42,0.4);
+  padding-bottom: 1px;
+}
+.lp-open:hover { color: var(--rust); border-color: var(--rust); }
+
+@media(max-width:700px){
+  #panel { width: 100%; }
+  #legend { display: none; }
+}
+</style>
+
+<style>
+.cook-nav{position:sticky;top:0;z-index:9999;background:rgba(7,15,24,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(198,144,48,0.32);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:52px;}
+.cook-nav-logo{font-family:'Playfair Display','Libre Baskerville',Georgia,serif;font-style:italic;font-size:1rem;color:#c69030;text-decoration:none;display:flex;align-items:baseline;gap:8px;}
+.cook-nav-logo em{font-style:normal;font-family:system-ui,sans-serif;font-size:0.58rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(242,232,204,0.32);font-weight:300;}
+.cook-nav-links{display:flex;gap:28px;list-style:none;}
+.cook-nav-links a{font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;color:rgba(242,232,204,0.7);text-decoration:none;transition:color 0.2s;}
+.cook-nav-links a:hover,.cook-nav-links a.active{color:#c69030;}
+@media(max-width:700px){.cook-nav{padding:0 16px;}.cook-nav-links{display:none;}}
+</style>
+</head>
+<body>
+<nav class="cook-nav">
+  <a href="index.html" class="cook-nav-logo">Cook in the Pacific <em>Then &amp; Now</em></a>
+  <ul class="cook-nav-links">
+    <li><a href="index.html#episodes">Episodes</a></li>
+    <li><a href="map.html" class="active">Maps</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="https://philreevell.com">Phil Reevell</a></li>
+  </ul>
+</nav>
+
+
+<header>
+  <div class="h-eyebrow">Cook in the Pacific</div>
+  <div class="h-sep"></div>
+  <div class="h-title">Second Voyage — South Pacific Islands</div>
+  <div class="h-voyage">Resolution &amp; Adventure &middot; 1773&ndash;1774</div>
+</header>
+
+<div id="map"></div>
+
+<div id="panel">
+  <button class="p-close" id="p-close-btn">&#x2715;</button>
+  <div class="p-body">
+    <div class="p-type" id="p-type"></div>
+    <div class="p-name" id="p-name"></div>
+    <div class="p-date" id="p-date"></div>
+    <div class="p-sig-wrap" id="p-sig-wrap">
+      <div class="p-sig-label">Significance in the Record</div>
+      <div class="p-sig-bar"><div class="p-sig-fill" id="p-sig-fill"></div></div>
+      <div class="p-sig-meta" id="p-sig-meta"></div>
+    </div>
+    <div class="p-lbl">Cook's Journal</div>
+    <div class="p-quote" id="p-quote"></div>
+    <div class="p-lbl">Context</div>
+    <div class="p-notes" id="p-notes"></div>
+    <div id="p-audio-section"></div>
+    <div class="p-src">J.C. Beaglehole (ed.), <em>The Journals of Captain James Cook</em>, Vol. II. Hakluyt Society. Public domain.</div>
+  </div>
+</div>
+
+<div id="legend">
+  <div class="leg-title">Location Type</div>
+  <div class="leg-row">
+    <div class="leg-dot" style="background:#8b3a1a;"></div>
+    <div class="leg-text">Landing — days ashore</div>
+  </div>
+  <div class="leg-row">
+    <div class="leg-dot" style="background:transparent;border:2px solid #8b3a1a;"></div>
+    <div class="leg-text">Sail-past or brief contact</div>
+  </div>
+  <div class="leg-row">
+    <div class="leg-dot" style="background:#1b3a4b;"></div>
+    <div class="leg-text">Near-miss / no landing</div>
+  </div>
+</div>
+
+<div id="seq-nav">
+  <button class="seq-btn" id="btn-prev">&#8592; Prev</button>
+  <button class="seq-btn" id="btn-next">Next &#8594;</button>
+</div>
+
+<script>
+function initMap() {
+  if (typeof L === 'undefined') {
+    setTimeout(initMap, 100);
+    return;
+  }
+// ─────────────────────────────────────────────────────────────────────────────
+// MAP INIT
+// ─────────────────────────────────────────────────────────────────────────────
+// Editorial bounds: Tahiti (east) to Vanuatu (west), equator to 40S
+// Lon range: 160E to 210E (= 150W), giving room either side
+const BOUNDS = L.latLngBounds(
+  L.latLng(-38,  155),   // SW — below New Caledonia / NZ margin
+  L.latLng(  2,  215)    // NE — above equator, east of Tahiti (215 = 145W)
+);
+
+const map = L.map('map', {
+  maxBounds: BOUNDS,
+  maxBoundsViscosity: 0.85,
+  minZoom: 4,
+  maxZoom: 13,
+  zoomControl: true,
+  attributionControl: true,
+  worldCopyJump: false
+});
+
+// Fit to editorial bounds on load
+map.fitBounds(BOUNDS, { padding: [20, 20] });
+
+// Esri Ocean Base — reduce opacity slightly to calm depth noise at overview zoom
+L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
+  { attribution: 'Tiles &copy; Esri', maxZoom: 13, opacity: 0.82 }
+).addTo(map);
+
+// Reference layer (place names, island labels) — only show when zoomed in
+const refLayer = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}',
+  { attribution: '', maxZoom: 13, opacity: 0 }
+).addTo(map);
+
+// Fade reference layer in as user zooms
+map.on('zoomend', () => {
+  const z = map.getZoom();
+  const op = z < 5 ? 0 : z < 7 ? (z - 5) / 2 * 0.6 : 0.75;
+  refLayer.setOpacity(op);
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIGNIFICANCE SCALE
+// 1–10: 1 = four lines (Vatoa), 10 = multi-day, major journal entry (Nomuka)
+// Drives: pin size, panel bar width, label prominence
+// ─────────────────────────────────────────────────────────────────────────────
+
+const LOCATIONS = [
+  {
+    id: 'tahiti-ii',
+    name: 'Matavai Bay, Tahiti',
+    lat: -17.494, lon: -149.494,
+    type: 'landing',
+    date: 'Aug 1773 &amp; Apr 1774',
+    significance: 7,
+    sigMeta: 'Two visits · several weeks ashore · substantial journal record',
+    quote: 'The island appeared to be very fruitfull… the whole face of the Country wore a most delightfull aspect. The Natives… expressed great joy at seeing us.',
+    notes: 'Return visit — Cook\'s second of three calls at Tahiti. Signs of change since 1769. Mai (Omai), who would travel to London, was encountered here. Banks\'s specimens from the first voyage had already altered European understanding of Pacific botany.',
+    audio: []
+  },
+  {
+    id: 'tongatapu',
+    name: 'Tongatapu, Tonga',
+    lat: -21.147, lon: -175.252,
+    type: 'landing',
+    date: 'Oct 1773',
+    significance: 6,
+    sigMeta: 'Several days · named the Friendly Islands · substantial journal record',
+    quote: 'The friendly and peaceable behaviour of these people gave this group the name of the Friendly Islands, and they deserve the name.',
+    notes: 'First visit to the Tongan group. Cook named them the Friendly Islands — a name that has an ironic undertone: Tongan oral tradition holds that the chiefs were planning to kill Cook but could not agree on a method in time.',
+    audio: []
+  },
+  {
+    id: 'easter',
+    name: 'Easter Island / Rapa Nui',
+    lat: -27.148, lon: -109.427,
+    type: 'landing',
+    date: 'March 1774',
+    significance: 6,
+    sigMeta: '4 days · first accurate charting · genuine bafflement recorded',
+    quote: 'We could not learn how they transported the statues to the places where they now stand, or even by what means they were set up, as those we saw were not of one piece.',
+    notes: 'First accurate European charting of the island. Cook\'s journal is notable for what it does not claim — he records his bafflement at the moai without attempting an explanation. The population appeared reduced and the island stripped of resources.',
+    audio: []
+  },
+  {
+    id: 'marquesas',
+    name: 'Nuku Hiva, Marquesas',
+    lat: -8.86, lon: -140.142,
+    type: 'landing',
+    date: 'April 1774',
+    significance: 5,
+    sigMeta: 'Brief stop · first European visit since 1595',
+    quote: 'These Islands are very fruitfull and well inhabited… the people are as fine as any I have seen in this Sea.',
+    notes: 'First European contact since 1595. Cook\'s account is the first detailed description of Marquesan society. He noted the people\'s physical stature and the richness of the islands\' resources.',
+    audio: []
+  },
+  {
+    id: 'niue',
+    name: 'Niue',
+    lat: -19.074, lon: -169.852,
+    type: 'contact',
+    date: 'June 1774',
+    significance: 4,
+    sigMeta: 'No landing · repelled by armed islanders · Cook named it Savage Island',
+    quote: 'The Natives were assembling in great numbers, each arm\'d with a long Spear, a Club or a Stone, and some had all three.',
+    notes: 'Cook called it Savage Island after being prevented from landing. Niuean perspective: a successful defence of their island against an armed foreign vessel. The name persisted on European charts for over a century.',
+    audio: []
+  },
+  {
+    id: 'palmerston',
+    name: 'Palmerston Atoll',
+    lat: -18.042, lon: -163.147,
+    type: 'near-miss',
+    date: 'June 1774',
+    significance: 2,
+    sigMeta: 'Sail-past only · brief entry · uninhabited',
+    quote: 'I gave it the name of Palmerston Island in honour of Lord Palmerston.',
+    notes: 'Uninhabited atoll — a naming and charting entry, nothing more. Now part of the Cook Islands. The entry illustrates the routine work of the voyage: observing, naming, recording position.',
+    audio: []
+  },
+  {
+    id: 'nomuka',
+    name: 'Nomuka (Annamocka)',
+    lat: -20.237, lon: -174.802,
+    type: 'landing',
+    date: '27–29 June 1774',
+    significance: 10,
+    sigMeta: 'Three days · gun stolen · shooting · public humiliation of Cook · largest journal entry in this arc',
+    quote: 'My lenity in this affair and the easy manner they had obtained this gun which they thought secure in their possession encouraged them to commit acts of greater violence, as will soon appear.',
+    notes: 'The most densely recorded encounter of the entire second voyage island arc. Three days produced: a theft, an escalating confrontation, a shooting, a man brought aboard apparently dead, and Cook\'s public humiliation by an elderly Tongan woman who abused him for refusing a young woman\'s company. By Wednesday, the same people were "very submissive and obliging." The entry is also separated by only three weeks from his warm departure from the same island group on June 4th ("every blessing man can wish").',
+    audio: [
+      {
+        label: 'Extract One · 28 June 1774',
+        title: '\u201cAs Will Soon Appear\u201d',
+        note: 'Cook hears the surgeon\'s gun has been stolen and hastens ashore — his own cliff-hanger. Ends on his rationalisation of restraint: "My lenity in this affair… encouraged them to commit acts of greater violence, as will soon appear."',
+        src: null
+      },
+      {
+        label: 'Extract Two · 28 June 1774',
+        title: '\u201cThe Abuse of the Old Woman I Could Not\u201d',
+        note: 'After the shooting and recovery of a stolen adze, Cook is publicly mocked by an elderly Tongan woman for refusing a young woman\'s company. One of the most humanising moments in the entire journal record. Cook flees to his boat.',
+        src: null
+      }
+    ]
+  },
+  {
+    id: 'vatoa',
+    name: 'Vatoa (Turtle Island), Fiji',
+    lat: -19.819, lon: 178.244,
+    type: 'near-miss',
+    date: '2–3 July 1774',
+    significance: 1,
+    sigMeta: 'Four lines in the journal · sail-past only · Cook never set foot on Fijian soil',
+    quote: 'Saw land bearing W \u00bd N\u2026 it appeared to be an Island of good extent.',
+    notes: 'The series pivot. Cook\'s entire Fijian record is four lines — a bearing, a distance estimate, a name. The main Fiji group lay just to the north, unseen, with a population of roughly 100,000 people. What mattered was not the encounter but the journal entry, and what that entry set in motion: the reading of these pages in London, the missionaries who followed, the blackbirders, the annexation, the girmitiyas. Four lines.',
+    audio: []
+  },
+  {
+    id: 'vanuatu-efate',
+    name: 'Efate, Vanuatu (New Hebrides)',
+    lat: -17.658, lon: 168.43,
+    type: 'landing',
+    date: 'July 1774',
+    significance: 5,
+    sigMeta: 'Several days · significant journal record',
+    quote: 'The Natives of these Islands are the most ugly and ill proportioned people I ever saw, and in every respect different from any we had met with in this Sea.',
+    notes: 'Cook at his least generous — worth noting for what it reveals about the limits of his categories. The Vanuatuan peoples\' different physical appearance, language, and customs from the Polynesian islands he had visited produced in Cook an unusually harsh judgment. Forster\'s account is more analytical.',
+    audio: []
+  },
+  {
+    id: 'vanuatu-august',
+    name: 'New Hebrides — "Invaders of Their Country"',
+    lat: -16.5, lon: 167.5,
+    type: 'landing',
+    date: '14 August 1774',
+    significance: 9,
+    sigMeta: 'Forced landing · shooting · most self-aware passage in the voyage journals',
+    quote: 'In what other light can they than at first look upon us as invaders of the country; time and some acquaintance with us can only convince them of their mistake.',
+    notes: 'The most significant single passage in the second voyage journals. After a coercive landing backed by firearms, Cook records the encounter from the islanders\' perspective — then immediately retreats to imperial confidence: their perception of the British as invaders is "their mistake," to be corrected by time and acquaintance. He sees the problem and subordinates it in the same breath.',
+    audio: [
+      {
+        label: 'Full Entry · 14 August 1774',
+        title: '\u201cInvaders of the Country\u201d',
+        note: 'The complete New Hebrides entry. Cook\'s most extended moment of self-awareness in the entire record — and the final sentence, which most quotations omit, is more damning than the passage that precedes it.',
+        src: null
+      }
+    ]
+  },
+  {
+    id: 'new-caledonia',
+    name: 'New Caledonia',
+    lat: -21.5, lon: 165.5,
+    type: 'landing',
+    date: 'September 1774',
+    significance: 5,
+    sigMeta: 'New discovery · several days · Forster notable here',
+    quote: 'The Country had a very hilly surface and was in some places cover\'d with wood and in others with grass… upon the whole it appeared to be a fine fertile country.',
+    notes: 'First European contact. Forster noted botanical links between the flora here and that of other Pacific islands, anticipating later understanding of ancient land connections. Cook\'s assessment is straightforward; Forster\'s is more significant scientifically.',
+    audio: []
+  }
+];
+
+// Sequence order (chronological)
+let currentIdx = -1;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MARKER STYLES
+// ─────────────────────────────────────────────────────────────────────────────
+function makeIcon(loc) {
+  const sig = loc.significance;
+  // Base radius: 6–18px driven by significance
+  const r = 6 + Math.round(sig * 1.2);
+  const isLanding   = loc.type === 'landing';
+  const isContact   = loc.type === 'contact';
+  const isNearMiss  = loc.type === 'near-miss';
+
+  let fill, stroke, strokeW, inner;
+  if (isLanding) {
+    fill = '#8b3a1a'; stroke = 'rgba(139,58,26,0.4)'; strokeW = 2;
+    inner = `<circle cx="${r+strokeW}" cy="${r+strokeW}" r="${Math.max(2,r*0.38)}" fill="rgba(250,244,230,0.7)"/>`;
+  } else if (isContact) {
+    fill = 'none'; stroke = '#8b3a1a'; strokeW = 2.5;
+    inner = '';
+  } else {
+    fill = '#1b3a4b'; stroke = 'rgba(27,58,75,0.35)'; strokeW = 2;
+    inner = '';
+  }
+
+  const sz = (r + strokeW) * 2;
+  const cx = r + strokeW;
+  const svg = `<svg width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${cx}" cy="${cx}" r="${r + strokeW * 0.5}" fill="${stroke}" opacity="0.3"/>
+    <circle cx="${cx}" cy="${cx}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}"/>
+    ${inner}
+  </svg>`;
+
+  return L.divIcon({
+    className: '',
+    html: svg,
+    iconSize: [sz, sz],
+    iconAnchor: [cx, cx],
+    popupAnchor: [0, -(cx + 4)]
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VOYAGE ROUTE LINE
+// ─────────────────────────────────────────────────────────────────────────────
+// Second voyage route — two segments split at antimeridian
+// Segment A: Tahiti → Tongatapu → Easter → Marquesas → Niue → Palmerston → Nomuka
+// Note: after Tongatapu (Oct 1773) Cook went south toward Antarctic before 
+// Easter Island (Mar 1774) — simplified here to direct line for clarity
+// Segment B: Nomuka → Vatoa → Efate → New Hebrides → New Caledonia
+// Split because Nomuka is at ~175W and Vatoa at 178E — antimeridian crossing
+
+const routeA = [
+  [-17.494, -149.494],  // Tahiti Aug 1773
+  [-21.147, -175.252],  // Tongatapu Oct 1773
+  [-27.148, -109.427],  // Easter Island Mar 1774
+  [-8.86,   -140.142],  // Marquesas Apr 1774
+  [-19.074, -169.852],  // Niue Jun 1774
+  [-18.042, -163.147],  // Palmerston Jun 1774
+  [-20.237, -174.802],  // Nomuka Jun 1774
+];
+
+// Western Pacific segment uses positive longitudes throughout
+const routeB = [
+  [-20.237,  185.198],  // Nomuka (175W = 185E) — match antimeridian side
+  [-19.819,  178.244],  // Vatoa Jul 1774
+  [-17.658,  168.43 ],  // Efate Jul 1774
+  [-16.5,    167.5  ],  // New Hebrides Aug 1774
+  [-21.5,    165.5  ],  // New Caledonia Sep 1774
+];
+
+const lineStyle = {
+  color: 'rgba(139,58,26,0.6)',
+  weight: 2,
+  dashArray: '7 5',
+  lineJoin: 'round',
+  lineCap: 'round'
+};
+
+L.polyline(routeA, lineStyle).addTo(map);
+L.polyline(routeB, lineStyle).addTo(map);
+
+// Directional arrow markers at midpoints to show travel direction
+function arrowMarker(latlng, bearing) {
+  const svg = `<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="8,1 14,14 8,10 2,14" fill="rgba(139,58,26,0.65)"
+      transform="rotate(${bearing},8,8)"/>
+  </svg>`;
+  return L.marker(latlng, {
+    icon: L.divIcon({ className:'', html: svg, iconSize:[16,16], iconAnchor:[8,8] }),
+    interactive: false
+  });
+}
+// A few directional arrows along the route
+arrowMarker([-19.5, -162], 260).addTo(map);   // heading west toward Nomuka
+arrowMarker([-19.0,  172],  280).addTo(map);  // heading west toward Vanuatu
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLACE MARKERS
+// ─────────────────────────────────────────────────────────────────────────────
+const markers = {};
+
+LOCATIONS.forEach((loc, idx) => {
+  const marker = L.marker([loc.lat, loc.lon], { icon: makeIcon(loc) }).addTo(map);
+
+  marker.bindPopup(`
+    <div class="lp-name">${loc.name}</div>
+    <div class="lp-date">${loc.date}</div>
+    <div style="font-size:0.78rem;font-style:italic;color:rgba(26,18,10,0.5);margin-bottom:0.2rem;">${loc.sigMeta}</div>
+    <div class="lp-open" onclick="openPanel(${idx})">Open full entry &rarr;</div>
+  `, { maxWidth: 240 });
+
+  marker.on('click', () => {
+    currentIdx = idx;
+  });
+
+  markers[loc.id] = { marker, idx };
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+function openPanel(idx) {
+  const loc = LOCATIONS[idx];
+  currentIdx = idx;
+
+  document.getElementById('p-type').textContent =
+    loc.type === 'landing'   ? 'Landing — days ashore' :
+    loc.type === 'contact'   ? 'Brief contact / repelled' :
+                               'Sail-past — no landing';
+
+  document.getElementById('p-name').innerHTML  = loc.name;
+  document.getElementById('p-date').innerHTML  = loc.date;
+  document.getElementById('p-quote').textContent = '\u201c' + loc.quote + '\u201d';
+  document.getElementById('p-notes').textContent = loc.notes;
+
+  // Significance bar
+  const pct = (loc.significance / 10 * 100).toFixed(0);
+  document.getElementById('p-sig-fill').style.width = pct + '%';
+  document.getElementById('p-sig-meta').textContent = loc.sigMeta;
+
+  // Audio
+  const audioSec = document.getElementById('p-audio-section');
+  audioSec.innerHTML = '';
+  if (loc.audio && loc.audio.length) {
+    const wrap = document.createElement('div');
+    wrap.className = 'p-audio';
+    const hdr = document.createElement('div');
+    hdr.className = 'p-lbl';
+    hdr.textContent = 'Journal Readings';
+    wrap.appendChild(hdr);
+
+    loc.audio.forEach((a, i) => {
+      if (i > 0) {
+        const hr = document.createElement('hr');
+        hr.className = 'audio-rule';
+        wrap.appendChild(hr);
+      }
+      const item = document.createElement('div');
+      item.className = 'p-audio-item';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'p-audio-extract-label';
+      lbl.textContent = a.label;
+
+      const title = document.createElement('div');
+      title.className = 'p-audio-title';
+      title.textContent = a.title;
+
+      const note = document.createElement('div');
+      note.className = 'p-audio-note';
+      note.textContent = a.note;
+
+      item.appendChild(lbl); item.appendChild(title); item.appendChild(note);
+
+      if (a.src) {
+        const player = document.createElement('audio');
+        player.className = 'p-player';
+        player.controls = true;
+        player.preload = 'none';
+        const src = document.createElement('source');
+        src.src = a.src; src.type = 'audio/mpeg';
+        player.appendChild(src);
+        player.addEventListener('play', () => {
+          wrap.querySelectorAll('audio').forEach(el => { if (el !== player) el.pause(); });
+        });
+        item.appendChild(player);
+      } else {
+        const pend = document.createElement('div');
+        pend.className = 'p-audio-pending';
+        pend.textContent = 'Recording pending — ElevenLabs Studio';
+        item.appendChild(pend);
+      }
+      wrap.appendChild(item);
+    });
+    audioSec.appendChild(wrap);
+  }
+
+  // Fly to location
+  map.flyTo([loc.lat, loc.lon], Math.max(map.getZoom(), 6), { duration: 1.1 });
+
+  document.getElementById('panel').classList.add('open');
+  map.closePopup();
+}
+
+document.getElementById('p-close-btn').addEventListener('click', () => {
+  document.getElementById('panel').classList.remove('open');
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEQUENCE NAVIGATION
+// ─────────────────────────────────────────────────────────────────────────────
+document.getElementById('btn-next').addEventListener('click', () => {
+  const next = (currentIdx + 1) % LOCATIONS.length;
+  openPanel(next);
+});
+document.getElementById('btn-prev').addEventListener('click', () => {
+  const prev = (currentIdx - 1 + LOCATIONS.length) % LOCATIONS.length;
+  openPanel(prev);
+});
+
+// Open Nomuka on load to demonstrate the template
+setTimeout(() => {
+  const nomuka = LOCATIONS.findIndex(l => l.id === 'nomuka');
+  openPanel(nomuka);
+  }, 800);
+} // end initMap
+
+document.addEventListener('DOMContentLoaded', initMap);
+</script>
+</body>
+</html>
