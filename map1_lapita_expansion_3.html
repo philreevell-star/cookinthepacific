@@ -365,13 +365,13 @@ map.fitBounds(BOUNDS, { padding: [20, 20] });
 
 // Esri Ocean Base — reduce opacity slightly to calm depth noise at overview zoom
 L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   { attribution: 'Tiles &copy; Esri', maxZoom: 13, opacity: 0.82 }
 ).addTo(map);
 
 // Reference layer (place names, island labels) — only show when zoomed in
 const refLayer = L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}',
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   { attribution: '', maxZoom: 13, opacity: 0 }
 ).addTo(map);
 
