@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Second Voyage — Resolution 1774</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a120a; --parchment: #f0e6c8; --aged: #d4bc88;
+  --rust: #8b3a1a; --ocean: #1b3a4b; --gold: #c9913a; --cream: #faf4e6;
+  --panel-w: 360px;
+}
+html, body { height: 100%; font-family: 'Source Serif 4', Georgia, serif; background: var(--ink); color: var(--parchment); overflow: hidden; }
+
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200; height: 50px;
+  background: linear-gradient(to right, rgba(26,18,10,0.97), rgba(27,58,75,0.95));
+  border-bottom: 1px solid rgba(201,145,58,0.25);
+  display: flex; align-items: center; padding: 0 1.6rem; gap: 1.2rem;
+}
+.h-label { font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); }
+.h-sep { width: 1px; height: 16px; background: rgba(201,145,58,0.25); }
+.h-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--parchment); }
+.h-right { margin-left: auto; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(212,188,136,0.5); }
+
+#map-wrap { position: fixed; top: 50px; left: 0; right: 0; bottom: 0; overflow: hidden; }
+#voyage-svg { width: 100%; height: 100%; display: block; }
+
+.ocean-fill { fill: #0d1f2d; }
+.grid-line { stroke: rgba(201,145,58,0.1); stroke-width: 0.5; fill: none; }
+.lat-label, .lon-label { font-family: 'Source Serif 4', serif; font-size: 9px; fill: rgba(201,145,58,0.28); }
+.landmass { fill: #263318; stroke: rgba(201,145,58,0.15); stroke-width: 0.6; }
+.antimeridian { stroke: rgba(201,145,58,0.3); stroke-width: 0.7; stroke-dasharray: 3 4; fill: none; }
+
+.route { fill: none; stroke: rgba(139,58,26,0.8); stroke-width: 2; stroke-dasharray: 9 5; stroke-linecap: round; }
+.route-stub { fill: none; stroke: rgba(139,58,26,0.4); stroke-width: 1.5; stroke-dasharray: 3 4; }
+.route-jog  { fill: none; stroke: rgba(139,58,26,0.5); stroke-width: 1.5; stroke-dasharray: 5 5; }
+
+.pin-landing  { fill: var(--rust); stroke: rgba(240,230,200,0.25); stroke-width: 1.5; cursor: pointer; }
+.pin-contact  { fill: none; stroke: var(--rust); stroke-width: 2.5; cursor: pointer; }
+.pin-sailpast { fill: var(--ocean); stroke: rgba(201,145,58,0.4); stroke-width: 2; cursor: pointer; }
+.pin-inner    { fill: rgba(250,244,230,0.65); pointer-events: none; }
+.pin-glow     { fill: rgba(201,145,58,0.1); stroke: none; }
+.sig-ring     { fill: none; stroke: rgba(201,145,58,0.25); stroke-width: 1; stroke-dasharray: 2 2; }
+
+.pin-group { cursor: pointer; }
+.pin-group:hover .pin-landing,
+.pin-group:hover .pin-contact,
+.pin-group:hover .pin-sailpast { filter: drop-shadow(0 0 7px rgba(201,145,58,0.7)); stroke: var(--gold); }
+
+.pin-label { font-family: 'Source Serif 4', serif; font-size: 10px; fill: rgba(240,230,200,0.82); pointer-events: none; }
+.pin-date  { font-size: 8.5px; fill: rgba(212,188,136,0.42); font-style: italic; pointer-events: none; }
+
+#panel {
+  position: fixed; top: 50px; right: 0; bottom: 0; width: var(--panel-w);
+  background: var(--cream); border-left: 1px solid rgba(26,18,10,0.15);
+  transform: translateX(100%); transition: transform 0.32s cubic-bezier(0.22,0.61,0.36,1);
+  overflow-y: auto; z-index: 150; color: var(--ink);
+}
+#panel.open { transform: translateX(0); }
+.p-close { position: sticky; top: 0; display: flex; justify-content: flex-end; padding: 0.8rem 0.9rem 0; background: var(--cream); z-index: 10; }
+.p-close-btn { width: 28px; height: 28px; border: 1px solid rgba(26,18,10,0.2); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink); font-size: 0.8rem; transition: border-color 0.2s, color 0.2s; }
+.p-close-btn:hover { border-color: var(--rust); color: var(--rust); }
+.p-body { padding: 0.4rem 1.5rem 2.5rem; }
+.p-type { font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.4rem; }
+.p-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.2; color: var(--ink); margin-bottom: 0.2rem; }
+.p-date-txt { font-size: 0.78rem; font-style: italic; color: rgba(26,18,10,0.42); padding-bottom: 0.9rem; margin-bottom: 0.9rem; border-bottom: 1px solid rgba(26,18,10,0.09); }
+.p-sig-label { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,10,0.3); margin-bottom: 0.3rem; }
+.p-sig-track { height: 3px; border-radius: 2px; background: rgba(26,18,10,0.08); overflow: hidden; }
+.p-sig-fill { height: 100%; background: linear-gradient(to right, var(--gold), var(--rust)); transition: width 0.5s ease; }
+.p-sig-meta { font-size: 0.68rem; font-style: italic; color: rgba(26,18,10,0.38); margin-top: 0.3rem; margin-bottom: 1rem; }
+.p-section-label { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(26,18,10,0.3); margin-top: 1rem; margin-bottom: 0.4rem; }
+.p-quote { font-family: 'IM Fell English', serif; font-size: 0.9rem; font-style: italic; line-height: 1.75; color: rgba(26,18,10,0.72); border-left: 2px solid var(--gold); padding-left: 0.85rem; }
+.p-notes { font-size: 0.8rem; line-height: 1.68; color: rgba(26,18,10,0.55); }
+.p-audio-pending { display: flex; align-items: center; gap: 0.55rem; padding: 0.5rem 0.7rem; margin-top: 0.4rem; background: rgba(201,145,58,0.07); border: 1px solid rgba(201,145,58,0.2); font-size: 0.7rem; font-style: italic; color: rgba(26,18,10,0.38); }
+.p-audio-pending::before { content: '🎙'; font-style: normal; opacity: 0.5; }
+.p-audio-title { font-family: 'Playfair Display', serif; font-size: 0.88rem; color: var(--ink); margin-bottom: 0.18rem; }
+.p-audio-note { font-size: 0.72rem; font-style: italic; color: rgba(26,18,10,0.45); line-height: 1.5; }
+.p-audio-rule { border: none; border-top: 1px dashed rgba(26,18,10,0.1); margin: 0.8rem 0; }
+
+#legend {
+  position: fixed; bottom: 1.2rem; left: 1.2rem; z-index: 120;
+  background: rgba(8,16,22,0.9); border: 1px solid rgba(201,145,58,0.18);
+  padding: 0.7rem 1rem; backdrop-filter: blur(4px);
+}
+.leg-title { font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(201,145,58,0.45); margin-bottom: 0.5rem; }
+.leg-row { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.28rem; }
+.leg-swatch-land    { width:10px; height:10px; border-radius:50%; background:var(--rust); flex-shrink:0; }
+.leg-swatch-contact { width:10px; height:10px; border-radius:50%; border:2.5px solid var(--rust); flex-shrink:0; }
+.leg-swatch-sail    { width:10px; height:10px; border-radius:50%; background:var(--ocean); border:1.5px solid rgba(201,145,58,0.4); flex-shrink:0; }
+.leg-route { width:26px; height:2px; background:repeating-linear-gradient(to right,rgba(139,58,26,0.8) 0,rgba(139,58,26,0.8) 7px,transparent 7px,transparent 12px); }
+.leg-text { font-size: 0.72rem; color: rgba(212,188,136,0.62); }
+
+#seq-nav { position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 120; display: flex; gap: 0.4rem; }
+.seq-btn { background: rgba(8,16,22,0.9); border: 1px solid rgba(201,145,58,0.22); padding: 0.4rem 0.9rem; font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(212,188,136,0.62); cursor: pointer; transition: all 0.2s; backdrop-filter: blur(4px); }
+.seq-btn:hover { background: var(--rust); color: var(--cream); border-color: var(--rust); }
+</style>
+
+<style>
+.cook-nav{position:sticky;top:0;z-index:9999;background:rgba(7,15,24,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(198,144,48,0.32);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:52px;}
+.cook-nav-logo{font-family:'Playfair Display','Libre Baskerville',Georgia,serif;font-style:italic;font-size:1rem;color:#c69030;text-decoration:none;display:flex;align-items:baseline;gap:8px;}
+.cook-nav-logo em{font-style:normal;font-family:system-ui,sans-serif;font-size:0.58rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(242,232,204,0.32);font-weight:300;}
+.cook-nav-links{display:flex;gap:28px;list-style:none;}
+.cook-nav-links a{font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;color:rgba(242,232,204,0.7);text-decoration:none;transition:color 0.2s;}
+.cook-nav-links a:hover,.cook-nav-links a.active{color:#c69030;}
+@media(max-width:700px){.cook-nav{padding:0 16px;}.cook-nav-links{display:none;}}
+</style>
+</head>
+<body>
+<nav class="cook-nav">
+  <a href="index.html" class="cook-nav-logo">Cook in the Pacific <em>Then &amp; Now</em></a>
+  <ul class="cook-nav-links">
+    <li><a href="index.html#episodes">Episodes</a></li>
+    <li><a href="map.html" class="active">Maps</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="https://philreevell.com">Phil Reevell</a></li>
+  </ul>
+</nav>
+
+
+<header>
+  <span class="h-label">Cook in the Pacific</span>
+  <span class="h-sep"></span>
+  <span class="h-title">HMS Resolution — The 1774 Tropical Arc</span>
+  <span class="h-right">Click any pin to open entry</span>
+</header>
+
+<div id="map-wrap">
+<!--
+PROJECTION
+  Longitude: 162°E to 103°W (unwrapped 257°), span = 257-162 = 95°
+  ViewBox: 1100 wide, usable x: 50..1080, span 1030px → 10.84 px/°
+  x = (lon_unwrapped - 162) * 10.84 + 50   [lon_unwrapped = lon if >0, else lon+360]
+
+  Latitude: 2°N to 32°S, span 34°
+  ViewBox: 620 tall, usable y: 30..600, span 570px → 16.76 px/°
+  y = (2 - lat) * 16.76 + 30
+
+  Computed positions:
+  Easter  -27.1, -109.4  unwrap=250.6  x=(250.6-162)*10.84+50=1010  y=(2+27.1)*16.76+30=533
+  Marq     -8.9, -140.1  unwrap=219.9  x=(219.9-162)*10.84+50= 678  y=(2+8.9)*16.76+30= 213
+  Niue    -19.1, -169.9  unwrap=190.1  x=(190.1-162)*10.84+50= 354  y=(2+19.1)*16.76+30= 387
+  Palm    -18.0, -163.1  unwrap=196.9  x=(196.9-162)*10.84+50= 428  y=(2+18.0)*16.76+30= 369
+  Nomuka  -20.2, -174.8  unwrap=185.2  x=(185.2-162)*10.84+50= 302  y=(2+20.2)*16.76+30= 405
+  Vatoa   -19.8, +178.2  unwrap=178.2  x=(178.2-162)*10.84+50= 226  y=(2+19.8)*16.76+30= 398
+  Antim   any,   180.0   unwrap=180.0  x=(180-162)*10.84+50  = 245
+  Efate   -17.7, +168.4  unwrap=168.4  x=(168.4-162)*10.84+50= 119  y=(2+17.7)*16.76+30= 357
+  Erom    -18.8, +169.1  unwrap=169.1  x=(169.1-162)*10.84+50= 127  y=(2+18.8)*16.76+30= 375
+  NHAug   -16.5, +167.5  unwrap=167.5  x=(167.5-162)*10.84+50= 110  y=(2+16.5)*16.76+30= 340
+  NCal    -21.5, +165.5  unwrap=165.5  x=(165.5-162)*10.84+50=  88  y=(2+21.5)*16.76+30= 425
+-->
+<svg id="voyage-svg" viewBox="0 0 1100 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<defs>
+  <!-- SVG marker arrowhead: attaches to path, automatically orients along line -->
+  <marker id="arr" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <polygon points="0 0, 9 3.5, 0 7" fill="rgba(201,145,58,0.9)"/>
+  </marker>
+  <marker id="arr-faint" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
+    <polygon points="0 0, 9 3.5, 0 7" fill="rgba(201,145,58,0.4)"/>
+  </marker>
+  <filter id="pglow" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur stdDeviation="4" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<!-- Ocean fill -->
+<rect width="1100" height="620" class="ocean-fill"/>
+
+<!-- Latitude grid lines -->
+<!-- y(0°)=(2-0)*16.76+30=64  y(10S)=(2+10)*16.76+30=231  y(20S)=392+30... -->
+<!-- y(0)=64, y(10S)=231, y(20S)=397, y(30S)=564 -->
+<line class="grid-line" x1="50" y1="64"  x2="1080" y2="64"/>
+<line class="grid-line" x1="50" y1="231" x2="1080" y2="231"/>
+<line class="grid-line" x1="50" y1="397" x2="1080" y2="397"/>
+<line class="grid-line" x1="50" y1="564" x2="1080" y2="564"/>
+<text class="lat-label" x="44" y="67"  text-anchor="end">0°</text>
+<text class="lat-label" x="44" y="234" text-anchor="end">10°S</text>
+<text class="lat-label" x="44" y="400" text-anchor="end">20°S</text>
+<text class="lat-label" x="44" y="567" text-anchor="end">30°S</text>
+
+<!-- Longitude grid lines -->
+<!-- x(170E)=(170-162)*10.84+50=137  x(180)=245  x(170W=190)=353  x(160W=200)=462
+     x(150W=210)=570  x(140W=220)=679  x(130W=230)=787  x(120W=240)=895  x(110W=250)=1003 -->
+<line class="grid-line" x1="137"  y1="30" x2="137"  y2="600"/>
+<line class="grid-line" x1="353"  y1="30" x2="353"  y2="600"/>
+<line class="grid-line" x1="462"  y1="30" x2="462"  y2="600"/>
+<line class="grid-line" x1="570"  y1="30" x2="570"  y2="600"/>
+<line class="grid-line" x1="679"  y1="30" x2="679"  y2="600"/>
+<line class="grid-line" x1="787"  y1="30" x2="787"  y2="600"/>
+<line class="grid-line" x1="895"  y1="30" x2="895"  y2="600"/>
+<line class="grid-line" x1="1003" y1="30" x2="1003" y2="600"/>
+<text class="lon-label" x="137"  y="25" text-anchor="middle">170°E</text>
+<text class="lon-label" x="353"  y="25" text-anchor="middle">170°W</text>
+<text class="lon-label" x="462"  y="25" text-anchor="middle">160°W</text>
+<text class="lon-label" x="570"  y="25" text-anchor="middle">150°W</text>
+<text class="lon-label" x="679"  y="25" text-anchor="middle">140°W</text>
+<text class="lon-label" x="787"  y="25" text-anchor="middle">130°W</text>
+<text class="lon-label" x="895"  y="25" text-anchor="middle">120°W</text>
+<text class="lon-label" x="1003" y="25" text-anchor="middle">110°W</text>
+
+<!-- Antimeridian x=245 -->
+<line class="antimeridian" x1="245" y1="30" x2="245" y2="600"/>
+<text x="248" y="45" font-family="'Source Serif 4',serif" font-size="8" fill="rgba(201,145,58,0.3)" font-style="italic">180°</text>
+
+<!-- Tropic of Capricorn: lat -23.5 → y=(2+23.5)*16.76+30=474 -->
+<line x1="50" y1="474" x2="1080" y2="474" stroke="rgba(201,145,58,0.07)" stroke-width="0.5" stroke-dasharray="2 6"/>
+<text x="52" y="471" font-family="'Source Serif 4',serif" font-size="7.5" fill="rgba(201,145,58,0.2)" font-style="italic">Tropic of Capricorn</text>
+
+<!-- ── LAND MASSES ── -->
+<!-- Australia east coast stub (left edge) -->
+<path class="landmass" d="M50,160 L64,152 L70,180 L67,240 L72,300 L67,370 L60,440 L66,500 L72,545 L62,585 L50,600 Z" opacity="0.65"/>
+<!-- NZ (bottom left, partially visible) -->
+<path class="landmass" d="M118,555 L132,540 L145,547 L148,568 L136,580 L118,576 Z"/>
+<path class="landmass" d="M106,582 L120,573 L140,580 L143,600 L120,610 L106,605 Z" opacity="0.7"/>
+<!-- New Caledonia: x=88, y=425 -->
+<path class="landmass" d="M72,414 L92,408 L108,413 L104,422 L86,426 Z"/>
+<!-- Vanuatu chain: NHAug~x110y340, Efate~x119y357, Erom~x127y375 -->
+<ellipse class="landmass" cx="113" cy="338" rx="5" ry="10"/>
+<ellipse class="landmass" cx="117" cy="358" rx="4" ry="8"/>
+<ellipse class="landmass" cx="122" cy="377" rx="4" ry="7"/>
+<ellipse class="landmass" cx="108" cy="318" rx="3" ry="6"/>
+<!-- Fiji: ~x219y360 -->
+<ellipse class="landmass" cx="212" cy="357" rx="9" ry="6"/>
+<ellipse class="landmass" cx="227" cy="350" rx="5" ry="3"/>
+<ellipse class="landmass" cx="215" cy="370" rx="3" ry="2"/>
+<!-- Tonga/Nomuka: x~300, y~400 -->
+<ellipse class="landmass" cx="296" cy="400" rx="3" ry="7"/>
+<ellipse class="landmass" cx="300" cy="385" rx="2" ry="4"/>
+<circle  class="landmass" cx="290" cy="397" r="3"/>
+<!-- Niue: x=354, y=387 -->
+<circle class="landmass" cx="354" cy="384" r="5"/>
+<!-- Palmerston: x=428, y=369 -->
+<circle class="landmass" cx="428" cy="366" r="3"/>
+<!-- Cook Islands -->
+<circle class="landmass" cx="472" cy="408" r="3"/>
+<circle class="landmass" cx="483" cy="397" r="2"/>
+<!-- Marquesas: x=678, y=213 -->
+<ellipse class="landmass" cx="678" cy="211" rx="6" ry="5"/>
+<ellipse class="landmass" cx="691" cy="218" rx="4" ry="3"/>
+<!-- Tuamotus: scattered 590-650 range -->
+<circle class="landmass" cx="592" cy="315" r="2"/>
+<circle class="landmass" cx="611" cy="299" r="2"/>
+<circle class="landmass" cx="629" cy="322" r="2"/>
+<circle class="landmass" cx="645" cy="305" r="2"/>
+<!-- Easter Island: x=1010, y=533 -->
+<ellipse class="landmass" cx="1010" cy="531" rx="6" ry="5"/>
+<!-- South America west coast (right edge) -->
+<path class="landmass" d="M1058,90 L1074,102 L1082,155 L1080,230 L1074,310 L1080,390 L1082,460 L1074,515 L1058,548 L1058,620 L1100,620 L1100,90 Z" opacity="0.7"/>
+
+<!-- ── ROUTE LINES ──
+  Strategy: use marker-end on individual line segments.
+  Each segment is one <line> or short <polyline> with marker-end=url(#arr).
+  Arrows appear at END of each segment, pointing in direction of travel.
+  We break each leg into two halves so the arrow appears at mid-leg.
+  
+  Easter(1010,533) → Marquesas(678,213) → Niue(354,387) →
+  Palm(428,369) [eastward jog] → Nomuka(302,405) →
+  [antimeridian 245,401] → Vatoa(226,398) →
+  Efate(119,357) → Eromanga(127,375) → NHAug(110,340) → NCal(88,425)
+-->
+
+<!-- Easter → Marquesas: two half-segments with arrow at join -->
+<line class="route" x1="1010" y1="533" x2="844"  y2="373" marker-end="url(#arr)"/>
+<line class="route" x1="844"  y1="373" x2="678"  y2="213"/>
+
+<!-- Marquesas → Niue: two halves -->
+<line class="route" x1="678" y1="213" x2="516" y2="300" marker-end="url(#arr)"/>
+<line class="route" x1="516" y1="300" x2="354" y2="387"/>
+
+<!-- Niue → Palmerston: eastward jog — lighter, arrow at mid -->
+<line class="route-jog" x1="354" y1="387" x2="391" y2="378" marker-end="url(#arr-faint)"/>
+<line class="route-jog" x1="391" y1="378" x2="428" y2="369"/>
+
+<!-- Palmerston → Nomuka: two halves -->
+<line class="route" x1="428" y1="369" x2="365" y2="387" marker-end="url(#arr)"/>
+<line class="route" x1="365" y1="387" x2="302" y2="405"/>
+
+<!-- Nomuka → antimeridian stub -->
+<line class="route-stub" x1="302" y1="405" x2="274" y2="403" marker-end="url(#arr-faint)"/>
+<line class="route-stub" x1="274" y1="403" x2="245" y2="401"/>
+
+<!-- antimeridian → Vatoa -->
+<line class="route-stub" x1="245" y1="401" x2="226" y2="398"/>
+
+<!-- Vatoa → Efate: two halves, arrow at mid -->
+<line class="route" x1="226" y1="398" x2="173" y2="378" marker-end="url(#arr)"/>
+<line class="route" x1="173" y1="378" x2="119" y2="357"/>
+
+<!-- Western cluster: short legs, plain dashes, no arrows (too close) -->
+<polyline class="route-jog" points="119,357 127,375 110,340 88,425"/>
+
+<!-- ── PINS ── -->
+
+<!-- New Caledonia x=88, y=425 -->
+<g class="pin-group" onclick="openPanel('new-caledonia')">
+  <circle cx="88" cy="425" r="13" class="pin-glow"/>
+  <circle cx="88" cy="425" r="6"  class="pin-landing"/>
+  <circle cx="88" cy="425" r="2.5" class="pin-inner"/>
+  <text class="pin-label" x="97" y="421">New Caledonia</text>
+  <text class="pin-date"  x="97" y="431">Sep 1774</text>
+</g>
+
+<!-- "Invaders" x=110, y=340 — significance ring, above Eromanga -->
+<g class="pin-group" onclick="openPanel('vanuatu-august')">
+  <circle cx="110" cy="340" r="18" class="pin-glow"/>
+  <circle cx="110" cy="340" r="15" class="sig-ring"/>
+  <circle cx="110" cy="340" r="8"  class="pin-contact" filter="url(#pglow)"/>
+  <text class="pin-label" x="68"  y="322" font-size="9.5">"Invaders"</text>
+  <text class="pin-date"  x="68"  y="334">14 Aug 1774</text>
+</g>
+
+<!-- Efate x=119, y=357 -->
+<g class="pin-group" onclick="openPanel('efate')">
+  <circle cx="119" cy="357" r="13" class="pin-glow"/>
+  <circle cx="119" cy="357" r="6"  class="pin-landing"/>
+  <circle cx="119" cy="357" r="2.5" class="pin-inner"/>
+  <text class="pin-label" x="131" y="353">Efate</text>
+  <text class="pin-date"  x="131" y="363">Jul 1774</text>
+</g>
+
+<!-- Eromanga & Tanna x=127, y=375 -->
+<g class="pin-group" onclick="openPanel('eromanga-tanna')">
+  <circle cx="127" cy="375" r="15" class="pin-glow"/>
+  <circle cx="127" cy="375" r="7"  class="pin-contact" filter="url(#pglow)"/>
+  <text class="pin-label" x="138" y="371">Eromanga &amp; Tanna</text>
+  <text class="pin-date"  x="138" y="381">4–6 Aug 1774</text>
+</g>
+
+<!-- Vatoa x=226, y=398 — largest, two sig rings -->
+<g class="pin-group" onclick="openPanel('vatoa')">
+  <circle cx="226" cy="398" r="24" class="pin-glow"/>
+  <circle cx="226" cy="398" r="21" class="sig-ring"/>
+  <circle cx="226" cy="398" r="14" class="sig-ring" style="stroke-dasharray:none;stroke-width:0.5;stroke-opacity:0.15"/>
+  <circle cx="226" cy="398" r="9"  class="pin-sailpast" filter="url(#pglow)"/>
+  <text class="pin-label" x="239" y="391" font-size="11" fill="rgba(240,230,200,0.92)">Vatoa</text>
+  <text class="pin-date"  x="239" y="403">2 Jul 1774 · Fiji</text>
+</g>
+
+<!-- Nomuka x=302, y=405 -->
+<g class="pin-group" onclick="openPanel('nomuka')">
+  <circle cx="302" cy="405" r="16" class="pin-glow"/>
+  <circle cx="302" cy="405" r="8"  class="pin-landing" filter="url(#pglow)"/>
+  <circle cx="302" cy="405" r="3.5" class="pin-inner"/>
+  <text class="pin-label" x="313" y="401">Nomuka</text>
+  <text class="pin-date"  x="313" y="411">Jun 1774</text>
+</g>
+
+<!-- Niue x=354, y=387 -->
+<g class="pin-group" onclick="openPanel('niue')">
+  <circle cx="354" cy="387" r="13" class="pin-glow"/>
+  <circle cx="354" cy="387" r="6"  class="pin-contact"/>
+  <text class="pin-label" x="363" y="382">Niue</text>
+  <text class="pin-date"  x="363" y="392">"Savage Island" · Jun 1774</text>
+</g>
+
+<!-- Palmerston x=428, y=369 -->
+<g class="pin-group" onclick="openPanel('palmerston')">
+  <circle cx="428" cy="369" r="11" class="pin-glow"/>
+  <circle cx="428" cy="369" r="5"  class="pin-landing"/>
+  <text class="pin-label" x="437" y="365">Palmerston</text>
+  <text class="pin-date"  x="437" y="375">Jun 1774</text>
+</g>
+
+<!-- Marquesas x=678, y=213 -->
+<g class="pin-group" onclick="openPanel('marquesas')">
+  <circle cx="678" cy="213" r="14" class="pin-glow"/>
+  <circle cx="678" cy="213" r="7"  class="pin-landing"/>
+  <circle cx="678" cy="213" r="3"  class="pin-inner"/>
+  <text class="pin-label" x="689" y="209">Marquesas</text>
+  <text class="pin-date"  x="689" y="219">Apr 1774</text>
+</g>
+
+<!-- Easter Island x=1010, y=533 -->
+<g class="pin-group" onclick="openPanel('easter')">
+  <circle cx="1010" cy="533" r="14" class="pin-glow"/>
+  <circle cx="1010" cy="533" r="7"  class="pin-landing"/>
+  <circle cx="1010" cy="533" r="3"  class="pin-inner"/>
+  <text class="pin-label" x="1018" y="528">Easter Island</text>
+  <text class="pin-date"  x="1018" y="538">Mar 1774</text>
+</g>
+
+<!-- Compass rose -->
+<g transform="translate(1048,574)" stroke="rgba(201,145,58,0.42)" stroke-width="0.8" fill="none">
+  <circle r="28"/><circle r="21"/>
+  <line x1="0" y1="-28" x2="0" y2="28"/>
+  <line x1="-28" y1="0" x2="28" y2="0"/>
+  <line x1="-20" y1="-20" x2="20" y2="20"/>
+  <line x1="20"  y1="-20" x2="-20" y2="20"/>
+  <polygon points="0,-28 -3.5,-13 0,-8 3.5,-13" fill="rgba(201,145,58,0.55)"/>
+  <text x="0" y="-33" text-anchor="middle" font-family="'Playfair Display',serif" font-size="9" fill="rgba(201,145,58,0.55)">N</text>
+</g>
+
+<!-- Cartouche -->
+<rect x="50" y="32" width="312" height="54" fill="rgba(8,16,22,0.8)" stroke="rgba(201,145,58,0.18)" stroke-width="0.8"/>
+<text x="63" y="51" font-family="'Source Serif 4',serif" font-size="8" letter-spacing="2.5" fill="rgba(201,145,58,0.55)">HMS RESOLUTION · SECOND VOYAGE</text>
+<text x="63" y="68" font-family="'Playfair Display',serif" font-style="italic" font-size="15" fill="rgba(240,230,200,0.88)">The Tropical Arc, 1774</text>
+<text x="63" y="80" font-family="'Source Serif 4',serif" font-size="8" fill="rgba(212,188,136,0.38)">Easter Island · Marquesas · Tonga · Fiji · New Hebrides</text>
+
+</svg>
+</div>
+
+<!-- Panel -->
+<div id="panel">
+  <div class="p-close"><button class="p-close-btn" id="p-close-btn">✕</button></div>
+  <div class="p-body">
+    <div class="p-type" id="p-type"></div>
+    <div class="p-name" id="p-name"></div>
+    <div class="p-date-txt" id="p-date-txt"></div>
+    <div class="p-sig-label">Editorial Significance</div>
+    <div class="p-sig-track"><div class="p-sig-fill" id="p-sig-fill" style="width:0%"></div></div>
+    <div class="p-sig-meta" id="p-sig-meta"></div>
+    <div class="p-section-label">Journal Extract</div>
+    <div class="p-quote" id="p-quote"></div>
+    <div class="p-section-label" style="margin-top:1rem">Notes</div>
+    <div class="p-notes" id="p-notes"></div>
+    <div id="p-audio-section"></div>
+  </div>
+</div>
+
+<div id="legend">
+  <div class="leg-title">Key</div>
+  <div class="leg-row"><div class="leg-swatch-land"></div><span class="leg-text">Landing</span></div>
+  <div class="leg-row"><div class="leg-swatch-contact"></div><span class="leg-text">Contact — repelled</span></div>
+  <div class="leg-row"><div class="leg-swatch-sail"></div><span class="leg-text">Sail-past — no landing</span></div>
+  <div class="leg-row"><div class="leg-route"></div><span class="leg-text">Route of Resolution</span></div>
+</div>
+
+<div id="seq-nav">
+  <button class="seq-btn" id="btn-prev">← Prev</button>
+  <button class="seq-btn" id="btn-next">Next →</button>
+</div>
+
+<script>
+const LOCATIONS = [
+  { id:'easter', name:'Easter Island — Rapa Nui', type:'landing', date:'March 1774', significance:7,
+    sigMeta:'Three days · the moai · population visibly reduced · desolation Cook cannot fully explain',
+    quote:'We could not but admire the ingenuity and perseverance of the island people in erecting such stupendous figures, and how they could raise and place on the pedestals those large cylindric stones which are placed on the heads of many of them.',
+    notes:'Three days ashore. Cook is struck by the moai but also by the evident poverty of the population — the island has been decimated by Peruvian slave raids and disease from earlier European contact, though Cook does not fully understand the scale of what he is seeing. Forster\'s account is notably bleaker than Cook\'s own.',
+    audio:[{label:'Extract · March 1774',title:'The Statues of Rapa Nui',note:'Cook on the moai. He admires the engineering; he is less certain about the people who built them and now live in their shadow.',src:null}]
+  },
+  { id:'marquesas', name:'Marquesas Islands', type:'landing', date:'April 1774', significance:6,
+    sigMeta:'Brief stop · first extended European description of tattooing · cooperative exchanges',
+    quote:'The people are of a bright copper colour, their features are not bad; many of the women are very handsome.',
+    notes:'The Marquesas stop is brief but produces some of Cook\'s most detailed ethnographic description — including the first extended European account of Polynesian tattooing. The exchange is generally peaceful.',
+    audio:[{label:'Extract · April 1774',title:'First Description of Tattooing',note:'One of the earliest detailed European descriptions of the practice that would become "tattoo" in European languages.',src:null}]
+  },
+  { id:'niue', name:'Niue — "Savage Island"', type:'contact', date:'June 1774', significance:5,
+    sigMeta:'Repelled on landing · name bestowed · islanders\' red betel nut mistaken for blood',
+    quote:'The Natives who had assembled on the shore to the number of two or three hundred, were so far from shewing any inclination to receive us with friendship that they threw stones at us as soon as we came within reach of them.',
+    notes:'Cook is repelled immediately and names the island Savage Island — a name that stuck for two centuries. The red substance the islanders were chewing was almost certainly betel nut. The Hodges wash drawing at British Library Add MS 15743.5 documents this encounter from the ship.',
+    audio:[{label:'Extract · June 1774',title:'"Savage Island"',note:'Cook\'s account of being repelled and the naming. The name outlasted Cook by 200 years.',src:null}]
+  },
+  { id:'palmerston', name:'Palmerston Atoll', type:'landing', date:'June 1774', significance:4,
+    sigMeta:'Uninhabited atoll · wood and water · later settled by William Marsters 1863',
+    quote:'A low woody island, about a league in circuit, lying in the latitude of 18°04\'S.',
+    notes:'An uninhabited atoll noted for wood and water. Cook names it after Lord Palmerston. The island was settled by English sailor William Marsters in 1863, whose descendants still live there today.',
+    audio:[]
+  },
+  { id:'nomuka', name:'Nomuka — Friendly Islands', type:'landing', date:'June 1774', significance:8,
+    sigMeta:'Gun theft triggers tension · high-alert departure · Vatoa follows three weeks later',
+    quote:'During the night some of the natives had got into the ship and had stolen some things of no great consequence, but the act was so daring that I thought it necessary to punish the offenders.',
+    notes:'The encounter begins cooperatively and deteriorates sharply when a theft triggers a punitive response. Cook leaves Nomuka on edge. Three weeks later Resolution sails past Fiji without stopping.',
+    audio:[{label:'Extract · June 1774',title:'The Theft at Nomuka',note:'The incident that produces high tension on departure. Three weeks later: Vatoa.',src:null}]
+  },
+  { id:'vatoa', name:'Vatoa — Turtle Island, Fiji', type:'near-miss', date:'2 July 1774', significance:10,
+    sigMeta:'Four lines in the journal · the series\' central argument · the non-encounter that changed everything',
+    quote:'In the latitude of 19°49\'S, longitude 178°W, we saw a high island bearing NNW, distant about 8 leagues. I did not attempt to land as the wind did not permit, and was not worth the loss of time.',
+    notes:'The most important four lines in the entire record — not because of what they say but because of what they don\'t. What mattered was not the non-encounter but the journal\'s existence and its reading by the London Missionary Society. The chain of causation from these four lines runs through the LMS to blackbirding, Arthur Gordon, the Deed of Cession, and the arrival of the Leonidas with the first girmitiyas in 1879.',
+    audio:[
+      {label:'Log Entry · 2 July 1774',title:'Four Lines',note:'The complete journal entry for Vatoa. Formal log register — Admiralty-facing, precise, without reflection.',src:null},
+      {label:'Reflection',title:'"I Have Not Written That in the Log"',note:'The imagined second register — framed explicitly for the listener as imagined.',src:null}
+    ]
+  },
+  { id:'efate', name:'Efate — New Hebrides', type:'landing', date:'July 1774', significance:6,
+    sigMeta:'Cook\'s most dismissive ethnographic description in the entire record',
+    quote:'I thought these people the most ugly and ill-proportioned I had seen in the whole ocean.',
+    notes:'One of Cook\'s most overtly disparaging ethnographic assessments — widely quoted in discussions of his racial attitudes. The New Hebrides encounters consistently produce more difficult journal entries than the Polynesian island groups, for structural reasons explored in the Eromanga & Tanna entry.',
+    audio:[]
+  },
+  { id:'eromanga-tanna', name:'Eromanga & Tanna — New Hebrides', type:'contact', date:'4–6 August 1774', significance:7,
+    sigMeta:'Shooting at Eromanga · armed standoff at Tanna · four dead · ten days before the "Invaders" entry',
+    quote:'Our own safety now became the only consideration and yet I was very loath to fire upon such a multitude and resolved to make the chief alone fall a victim to his own treachery. But my musket at this critical moment refused to perform its part.',
+    notes:'At Eromanga on 4th August, Cook\'s plan to shoot the chief alone misfires and he orders a volley. Four men fall; two crawl into the bushes. He records with relief that half the muskets also failed, or more would have been killed. At Tanna on 6th August, a standoff is managed by firing over heads. One man responds by displaying his backside — Cook notes it required no interpreter. Also at Tanna: four small reeds in the sand whose meaning Cook could never determine. The Hodges wash drawing at British Library Add MS 15743.3 documents the Malekula coast of this island group.',
+    audio:[
+      {label:'Extract · 4 August 1774',title:'"My Musket at This Critical Moment Refused"',note:'The Eromanga approach and shooting. Cook\'s plan to fire on the chief alone is undone by a misfiring musket.',src:null},
+      {label:'Extract · 6 August 1774',title:'"It Was Not Necessary to Have an Interpreter"',note:'The Tanna standoff. A thousand armed islanders; Cook fires over their heads; one man turns and displays his backside.',src:null}
+    ]
+  },
+  { id:'vanuatu-august', name:'New Hebrides — "Invaders of Their Country"', type:'contact', date:'14 August 1774', significance:9,
+    sigMeta:'Most significant single passage in second voyage journals · self-awareness immediately subordinated',
+    quote:'In what other light can they than at first look upon us as invaders of the country; time and some acquaintance with us can only convince them of their mistake.',
+    notes:'After the shootings at Eromanga and the Tanna standoff, Cook records the encounter from the islanders\' perspective — then immediately retreats to imperial confidence: their perception of the British as invaders is "their mistake," to be corrected by time. He sees the problem and subordinates it in the same breath. The final sentence, which most quotations omit, is more damning than the passage that precedes it.',
+    audio:[{label:'Full Entry · 14 August 1774',title:'"Invaders of the Country"',note:'The complete entry. The final sentence — usually omitted — is more damning than what precedes it.',src:null}]
+  },
+  { id:'new-caledonia', name:'New Caledonia', type:'landing', date:'September 1774', significance:5,
+    sigMeta:'First European contact · Forster\'s botanical observations anticipate later science',
+    quote:'The country had a very hilly surface and was in some places covered with wood and in others with grass… upon the whole it appeared to be a fine fertile country.',
+    notes:'First European contact. Forster noted botanical links between the flora here and that of other Pacific islands — anticipating later understanding of ancient land connections of the kind Cook\'s journals made possible for subsequent science.',
+    audio:[]
+  }
+];
+
+let currentIdx = -1;
+
+function openPanel(id) {
+  const idx = LOCATIONS.findIndex(l => l.id === id);
+  if (idx === -1) return;
+  currentIdx = idx;
+  const loc = LOCATIONS[idx];
+  document.getElementById('p-type').textContent     = loc.type === 'landing' ? 'Landing — days ashore' : loc.type === 'contact' ? 'Brief contact / repelled' : 'Sail-past — no landing';
+  document.getElementById('p-name').textContent     = loc.name;
+  document.getElementById('p-date-txt').textContent = loc.date;
+  document.getElementById('p-quote').textContent    = '\u201c' + loc.quote + '\u201d';
+  document.getElementById('p-notes').textContent    = loc.notes;
+  document.getElementById('p-sig-fill').style.width = (loc.significance / 10 * 100) + '%';
+  document.getElementById('p-sig-meta').textContent = loc.sigMeta;
+  const sec = document.getElementById('p-audio-section');
+  sec.innerHTML = '';
+  if (loc.audio && loc.audio.length) {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-top:1rem;padding-top:0.9rem;border-top:1px solid rgba(26,18,10,0.09)';
+    const lbl = document.createElement('div'); lbl.className = 'p-section-label'; lbl.textContent = 'Journal Readings';
+    wrap.appendChild(lbl);
+    loc.audio.forEach((a, i) => {
+      if (i > 0) { const hr = document.createElement('hr'); hr.className = 'p-audio-rule'; wrap.appendChild(hr); }
+      const item = document.createElement('div');
+      const el = document.createElement('div'); el.className = 'p-sig-label'; el.style.marginTop = '0.5rem'; el.textContent = a.label;
+      const t  = document.createElement('div'); t.className = 'p-audio-title'; t.textContent = a.title;
+      const n  = document.createElement('div'); n.className = 'p-audio-note';  n.textContent = a.note;
+      item.appendChild(el); item.appendChild(t); item.appendChild(n);
+      if (a.src) {
+        const p = document.createElement('audio'); p.controls = true; p.style.cssText = 'width:100%;margin-top:0.4rem';
+        const s = document.createElement('source'); s.src = a.src; s.type = 'audio/mpeg'; p.appendChild(s); item.appendChild(p);
+      } else {
+        const pd = document.createElement('div'); pd.className = 'p-audio-pending'; pd.textContent = 'Recording pending — ElevenLabs Studio'; item.appendChild(pd);
+      }
+      wrap.appendChild(item);
+    });
+    sec.appendChild(wrap);
+  }
+  document.getElementById('panel').classList.add('open');
+}
+
+document.getElementById('p-close-btn').addEventListener('click', () => document.getElementById('panel').classList.remove('open'));
+document.getElementById('btn-next').addEventListener('click', () => openPanel(LOCATIONS[(currentIdx+1)%LOCATIONS.length].id));
+document.getElementById('btn-prev').addEventListener('click', () => openPanel(LOCATIONS[(currentIdx-1+LOCATIONS.length)%LOCATIONS.length].id));
+window.addEventListener('load', () => openPanel('vatoa'));
+</script>
+</body>
+</html>
