@@ -240,28 +240,18 @@
              allowfullscreen loading="lazy"></iframe>
      
      For the Google Earth embedded view of Vatoa specifically, use:
-     <div style="margin:16px 0;">
-      <iframe src="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r/data=OgMKATA" 
-              width="100%" 
-              height="420" 
-              frameborder="0" 
-              allowfullscreen
-              style="border:none;display:block;">
-      </iframe>
-      <p style="font-family:'Source Serif 4',Georgia,serif;font-size:0.8rem;font-style:italic;color:rgba(242,232,204,0.4);margin-top:8px;text-align:center;">
-        If the map does not load above, 
-        <a href="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r" 
-           target="_blank"
-           style="color:rgba(198,144,48,0.7);text-decoration:underline;">open Vatoa in Google Earth →</a>
-      </p>
-      <!-- SQUARESPACE: Google Earth embeds are blocked by Squarespace's iframe security.
-           To show this map in Squarespace, use a Code Block and paste:
-           <a href="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r" target="_blank">
-             View Vatoa in Google Earth
-           </a>
-           Or use a Button Block linking to that URL.
-           The direct link opens Google Earth at the correct location. -->
-    </div>
+     <div id="vatoa-map" style="width:100%;height:420px;margin:16px 0;border:1px solid rgba(198,144,48,0.2);"></div>
+    <script>
+      (function() {
+        var map = L.map('vatoa-map').setView([-19.82, 178.24], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 18
+        }).addTo(map);
+        L.marker([-19.82, 178.24]).addTo(map)
+          .bindPopup('<b>Vatoa</b><br>Turtle Island, Fiji').openPopup();
+      })();
+    </script>
      
      Note: Google Earth Web embed works at approximately:
      Vatoa centre: -19.82°S, 178.24°E
@@ -467,6 +457,8 @@
 .cook-nav-links a:hover,.cook-nav-links a.active{color:#c69030;}
 @media(max-width:700px){.cook-nav{padding:0 16px;}.cook-nav-links{display:none;}}
 </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 <nav class="cook-nav">
