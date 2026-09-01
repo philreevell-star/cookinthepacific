@@ -218,7 +218,24 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
     opacity: 0.6;
   }
 
-  </style>
+  
+  button.voyage-label {
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+  }
+  button.voyage-label:hover { color: var(--gilt-lt, #e0ac3a); }
+  .voyage-chevron { color: var(--gilt); font-size: 0.8rem; }
+  .voyage-panel { margin-bottom: 8px; }
+</style>
 </head>
 <body>
 
@@ -287,30 +304,39 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
       </div>
     </div>
 
-    <!-- VOYAGE 1 -->
+    <!-- VOYAGE 1 — open by default -->
     <div class="voyage-block fade-in">
-      <div class="voyage-label">Voyage One · 1768–1771 · HMS Endeavour</div>
-      <div class="ep-list">
+      <button class="voyage-label" onclick="toggleVoyage(this)" aria-expanded="true">
+        Voyage One · 1768–1771 · HMS Endeavour
+        <span class="voyage-chevron">▾</span>
+      </button>
+      <div class="ep-list voyage-panel">
         <div class="ep-item live"><div class="ep-n">1</div><div><div class="ep-title">The Man from the Moors</div><div class="ep-desc">From a farm labourer's cottage in Yorkshire to the quarter-deck of the Endeavour. Who was Cook — and how did he get there?</div></div><a href="ep1.html" class="ep-badge listen">Listen</a></div>
         <div class="ep-item"><div class="ep-n">2</div><div><div class="ep-title">The Honest Ship</div><div class="ep-desc">The Endeavour, the transit of Venus, and what happened when the sealed orders were opened.</div></div><div class="ep-badge">Coming</div></div>
         <div class="ep-item"><div class="ep-n">3</div><div><div class="ep-title">Matavai Bay</div><div class="ep-desc">The return to Tahiti. What Cook found — and what he brought with him.</div></div><div class="ep-badge">Coming</div></div>
       </div>
     </div>
 
-    <!-- VOYAGE 2 -->
+    <!-- VOYAGE 2 — collapsed -->
     <div class="voyage-block fade-in">
-      <div class="voyage-label">Voyage Two · 1772–1775 · HMS Resolution</div>
-      <div class="ep-list voyage-pending">
+      <button class="voyage-label" onclick="toggleVoyage(this)" aria-expanded="false">
+        Voyage Two · 1772–1775 · HMS Resolution
+        <span class="voyage-chevron">▸</span>
+      </button>
+      <div class="ep-list voyage-panel" style="display:none;">
         <div class="ep-item pending"><div class="ep-n">4</div><div><div class="ep-title">The Ice at the Edge of the World</div><div class="ep-desc">South into the pack ice. The second voyage pushes further than any ship has gone.</div></div><div class="ep-badge soon">Soon</div></div>
         <div class="ep-item pending"><div class="ep-n">5</div><div><div class="ep-title">Return and Reckoning</div><div class="ep-desc">The Pacific at second sight. Tonga, the Society Islands, Vatoa — and the question Cook starts to ask himself.</div></div><div class="ep-badge soon">Soon</div></div>
         <div class="ep-item pending"><div class="ep-n">6</div><div><div class="ep-title">The Race</div><div class="ep-desc">Britain, France, and the contest to write the Pacific into European geography.</div></div><div class="ep-badge soon">Soon</div></div>
       </div>
     </div>
 
-    <!-- VOYAGE 3 -->
+    <!-- VOYAGE 3 — collapsed -->
     <div class="voyage-block fade-in">
-      <div class="voyage-label">Voyage Three · 1776–1779 · HMS Resolution &amp; Discovery</div>
-      <div class="ep-list voyage-pending">
+      <button class="voyage-label" onclick="toggleVoyage(this)" aria-expanded="false">
+        Voyage Three · 1776–1779 · HMS Resolution &amp; Discovery
+        <span class="voyage-chevron">▸</span>
+      </button>
+      <div class="ep-list voyage-panel" style="display:none;">
         <div class="ep-item pending"><div class="ep-n">7</div><div><div class="ep-title">Then and Now</div><div class="ep-desc">The Pacific that Cook mapped and the Pacific that exists today. Tourism, sovereignty, climate.</div></div><div class="ep-badge soon">Soon</div></div>
         <div class="ep-item pending"><div class="ep-n">8</div><div><div class="ep-title">The God in the Bay</div><div class="ep-desc">Hawaii, February 1779. The question every version of Cook eventually arrives at.</div></div><div class="ep-badge soon">Soon</div></div>
         <div class="ep-item pending"><div class="ep-n">9</div><div><div class="ep-title">What the Maps Made Possible</div><div class="ep-desc">Aftermath, colonisation, and the world the voyages made. The closing argument.</div></div><div class="ep-badge soon">Soon</div></div>
@@ -319,6 +345,16 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
 
   </div>
 </div>
+
+<script>
+function toggleVoyage(btn) {
+  var panel = btn.nextElementSibling;
+  var expanded = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', !expanded);
+  btn.querySelector('.voyage-chevron').textContent = expanded ? '▸' : '▾';
+  panel.style.display = expanded ? 'none' : 'block';
+}
+</script>
 
 <!-- SECTION 4: SUBSCRIBE -->
 <div class="subscribe-band" id="subscribe">
