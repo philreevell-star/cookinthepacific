@@ -240,13 +240,27 @@
              allowfullscreen loading="lazy"></iframe>
      
      For the Google Earth embedded view of Vatoa specifically, use:
-     <div style="background:rgba(198,144,48,0.08);border:1px solid rgba(198,144,48,0.25);padding:28px;text-align:center;margin:16px 0;">
-      <p style="font-family:'Source Serif 4',Georgia,serif;font-size:0.95rem;font-style:italic;color:rgba(242,232,204,0.6);margin-bottom:16px;">Google Earth interactive view of Vatoa — opens in a new tab</p>
-      <a href="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r" 
-         target="_blank"
-         style="font-family:'DM Sans',system-ui,sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:#0b1c2a;background:#c69030;padding:12px 24px;text-decoration:none;display:inline-block;">
-        View Vatoa in Google Earth →
-      </a>
+     <div style="margin:16px 0;">
+      <iframe src="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r/data=OgMKATA" 
+              width="100%" 
+              height="420" 
+              frameborder="0" 
+              allowfullscreen
+              style="border:none;display:block;">
+      </iframe>
+      <p style="font-family:'Source Serif 4',Georgia,serif;font-size:0.8rem;font-style:italic;color:rgba(242,232,204,0.4);margin-top:8px;text-align:center;">
+        If the map does not load above, 
+        <a href="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r" 
+           target="_blank"
+           style="color:rgba(198,144,48,0.7);text-decoration:underline;">open Vatoa in Google Earth →</a>
+      </p>
+      <!-- SQUARESPACE: Google Earth embeds are blocked by Squarespace's iframe security.
+           To show this map in Squarespace, use a Code Block and paste:
+           <a href="https://earth.google.com/web/@-19.82,178.22,0a,50000d,35y,0h,0t,0r" target="_blank">
+             View Vatoa in Google Earth
+           </a>
+           Or use a Button Block linking to that URL.
+           The direct link opens Google Earth at the correct location. -->
     </div>
      
      Note: Google Earth Web embed works at approximately:
