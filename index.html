@@ -144,77 +144,7 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
   .act-row{grid-template-columns:1fr;}
   footer{flex-direction:column;gap:20px;padding:28px;}
 }
-
-/* ─── MAP SECTION ─────────────────────────────────────────────── */
-.map-section{background:var(--ocean-deep);padding:72px 0 0;border-top:1px solid var(--rule);}
-.map-section .section-title{color:var(--white);}
-.map-wrap{position:relative;height:630px;margin-top:32px;overflow:hidden;}
-#map-embed{position:absolute;inset:0;z-index:1;}
-#map-panel{position:absolute;top:0;right:0;bottom:0;width:340px;background:#faf4e6;border-left:1px solid rgba(26,18,10,.12);transform:translateX(100%);transition:transform .32s cubic-bezier(.22,.61,.36,1);overflow-y:auto;z-index:900;display:flex;flex-direction:column;}
-#map-panel.open{transform:translateX(0);}
-.mp-close{position:sticky;top:0;right:0;align-self:flex-end;margin:.75rem .75rem 0 0;width:28px;height:28px;border:1px solid rgba(26,18,10,.2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a120a;font-size:.8rem;flex-shrink:0;}
-.mp-close:hover{border-color:#8b3a1a;color:#8b3a1a;}
-.mp-body{padding:0 1.4rem 2rem;font-family:var(--serif);font-size:.82rem;}
-.mp-type{font-family:var(--sans);font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:#b8882a;margin-bottom:.3rem;font-weight:500;}
-.mp-name{font-family:var(--display);font-size:1.3rem;line-height:1.2;color:#1a120a;margin-bottom:.15rem;}
-.mp-date{font-size:.75rem;font-style:italic;color:rgba(26,18,10,.45);padding-bottom:.9rem;margin-bottom:.9rem;border-bottom:1px solid rgba(26,18,10,.09);}
-.mp-visits-label{font-family:var(--sans);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(26,18,10,.32);margin-bottom:.45rem;}
-.mp-visit-row{display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.38rem;}
-.mp-visit-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;}
-.mp-visit-line{font-size:.77rem;line-height:1.42;color:rgba(26,18,10,.6);}
-.mp-visit-line strong{color:#1a120a;font-weight:600;}
-.mp-total{font-size:.72rem;font-style:italic;color:rgba(26,18,10,.38);margin-top:.3rem;margin-bottom:1rem;}
-.mp-lbl{font-family:var(--sans);font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(26,18,10,.32);margin-top:1rem;margin-bottom:.3rem;}
-.mp-quote{font-family:var(--display);font-size:.9rem;font-style:italic;line-height:1.75;color:rgba(26,18,10,.72);border-left:2px solid #b8882a;padding-left:.85rem;margin-bottom:.5rem;}
-.mp-notes{font-size:.78rem;line-height:1.65;color:rgba(26,18,10,.58);}
-.mp-context{margin-top:.9rem;padding:.65rem .8rem;background:rgba(184,136,42,.06);border:1px solid rgba(184,136,42,.2);}
-.mp-context-lbl{font-family:var(--sans);font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:#b8882a;display:block;margin-bottom:.22rem;}
-.mp-context-text{font-size:.73rem;font-style:italic;line-height:1.55;color:rgba(26,18,10,.52);}
-.mp-src{font-size:.62rem;font-style:italic;color:rgba(26,18,10,.28);margin-top:1.2rem;padding-top:.8rem;border-top:1px solid rgba(26,18,10,.07);}
-#map-legend{position:absolute;bottom:1.2rem;left:1.2rem;z-index:800;background:rgba(250,244,230,.93);border:1px solid rgba(26,18,10,.14);padding:.7rem 1rem;}
-.map-leg-title{font-family:var(--sans);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(26,18,10,.38);margin-bottom:.5rem;font-weight:500;}
-.map-leg-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.28rem;}
-.map-leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
-.map-leg-text{color:rgba(26,18,10,.62);font-size:.73rem;}
-.map-leg-sub{font-size:.63rem;font-style:italic;color:rgba(26,18,10,.38);padding-left:18px;margin-bottom:.2rem;}
-#map-seq-nav{position:absolute;bottom:1.2rem;right:1.2rem;z-index:800;display:flex;gap:.4rem;}
-.map-seq-btn{background:rgba(250,244,230,.93);border:1px solid rgba(26,18,10,.18);padding:.4rem .75rem;font-family:var(--sans);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(26,18,10,.55);cursor:pointer;transition:all .2s;}
-.map-seq-btn:hover{background:#1a120a;color:#b8882a;border-color:#1a120a;}
-.leaflet-popup-content-wrapper{border-radius:2px!important;background:#faf4e6!important;border:1px solid rgba(26,18,10,.18)!important;box-shadow:0 4px 20px rgba(26,18,10,.18)!important;}
-.leaflet-popup-tip{background:#faf4e6!important;}
-.leaflet-popup-content{margin:.9rem 1rem!important;font-family:var(--serif);font-size:.85rem;line-height:1.5;color:#1a120a;}
-.lp-name{font-family:var(--display);font-size:1rem;margin-bottom:.15rem;font-weight:700;}
-.lp-date{font-style:italic;color:rgba(26,18,10,.45);font-size:.75rem;margin-bottom:.4rem;}
-.lp-open{display:inline-block;margin-top:.4rem;font-family:var(--sans);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#b8882a;cursor:pointer;border-bottom:1px solid rgba(184,136,42,.4);padding-bottom:1px;}
-.lp-open:hover{color:#8b3a1a;border-color:#8b3a1a;}
-
-/* ─── EPISODES — Series I (3 episodes) ───────────────────────── */
-.ep-featured{background:var(--ocean-mid);border:1px solid var(--rule);margin-bottom:2px;}
-.ep-featured-inner{display:grid;grid-template-columns:80px 1fr;align-items:start;padding:30px 36px 26px;gap:24px;border-bottom:1px solid var(--rule-lt);}
-.ep-feat-num{font-family:var(--display);font-size:4rem;font-weight:700;font-style:italic;color:rgba(198,144,48,.15);line-height:1;padding-top:6px;}
-.ep-feat-badge{margin-bottom:10px;}
-.ep-feat-title{font-family:var(--display);font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:10px;line-height:1.12;}
-.ep-feat-desc{font-family:var(--serif);font-size:.92rem;font-style:italic;color:var(--parch-mute);line-height:1.68;}
-.ep-player-wrap{padding:20px 36px 30px;}
-.ep-player-label{font-family:var(--sans);font-size:.55rem;letter-spacing:.32em;text-transform:uppercase;color:var(--parch-mute);font-weight:500;margin-bottom:12px;}
-.ep-coming-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:64px;}
-.ep-coming-card{background:white;display:grid;grid-template-columns:60px 1fr auto;align-items:center;padding:24px 28px;gap:18px;transition:background .2s;}
-.ep-coming-card:hover{background:#fdfaf5;}
-.ep-coming-num{font-family:var(--display);font-size:2.8rem;font-weight:700;font-style:italic;color:rgba(26,18,8,.055);line-height:1;text-align:right;}
-
-@media(max-width:900px){
-  .map-wrap{height:460px;}
-  #map-legend{display:none;}
-  #map-seq-nav{right:1rem;}
-  .ep-coming-grid{grid-template-columns:1fr;}
-  .ep-featured-inner{grid-template-columns:1fr;}
-  .ep-feat-num{display:none;}
-  .ep-player-wrap{padding:16px 20px 24px;}
-}
-
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 
@@ -222,8 +152,9 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
   <a href="/" class="nav-logo">Cook in the Pacific <em>Then &amp; Now</em></a>
   <ul class="nav-links">
     <li><a href="#episodes">Episodes</a></li>
+    <li><a href="map.html">Map</a></li>
     <li><a href="#about">About</a></li>
-    <li><a href="#map">Map</a></li>
+    <li><a href="map.html">Map</a></li>
     <li><a href="https://philreevell.com">Phil Reevell</a></li>
   </ul>
   <a href="#subscribe" class="nav-subscribe">Follow the series</a>
@@ -237,10 +168,12 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
   <div class="hero-content">
     <div class="hero-eyebrow">A narrative documentary podcast</div>
     <h1 class="hero-h1">Cook in the Pacific<em>Then and Now</em></h1>
-    <p class="hero-premise">Three historic voyages. Who was Captain James Cook and where did he explore in the Pacific?</p>
+    <p class="hero-premise">Nine episodes. Three voyages. One question that won't let go: who was Cook, what did he make of the Pacific — and what did his voyages actually make?</p>
     <div class="hero-questions">
-      <div class="hero-q">What did his journals record of his voyages and his encounters with the people who lived there?</div>
-      <div class="hero-q">What are the consequences today?</div>
+      <div class="hero-questions-label">Three questions. Nine episodes to answer them.</div>
+      <div class="hero-q">Who was this man?</div>
+      <div class="hero-q">What did he actually discover?</div>
+      <div class="hero-q">What were the consequences?</div>
     </div>
     <div class="hero-actions">
       <a href="#episodes" class="btn-primary">Listen now</a>
@@ -248,7 +181,7 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
     </div>
   </div>
   <div class="hero-stats">
-    <div class="stat"><div class="stat-label">Series I &middot; Episodes</div><div class="stat-value">3</div></div>
+    <div class="stat"><div class="stat-label">Episodes</div><div class="stat-value">9</div></div>
     <div class="stat"><div class="stat-label">Voyages</div><div class="stat-value">3</div></div>
     <div class="stat"><div class="stat-label">Launched</div><div class="stat-value">Jul '26</div></div>
     <div class="stat"><div class="stat-label">1768 — 1779</div><div class="stat-value">11 years</div></div>
@@ -265,61 +198,38 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
   <div class="portrait-text">
     <div class="portrait-kicker">About the series</div>
     <h2>Made in Suva, Fiji</h2>
-    <p>I arrived in Fiji in early 2026 with two months, two books, and a question I&rsquo;d been carrying since childhood: what did Captain James Cook actually do in the Pacific?</p>
-    <p>Cook never landed in Fiji, yet the history of its capital Suva is a direct consequence of his voyages. So that&rsquo;s where this podcast begins &mdash; in Fiji &mdash; as I explore Cook&rsquo;s epic three voyages across the South Pacific.</p>
-    <p>Three voyages and questions that won&rsquo;t let go: who was Cook, what did he make of the Pacific &mdash; and what do his voyages actually mean today?</p>
+    <p>I arrived in Fiji in early 2026 with two months, two books, and a question I'd been carrying since childhood: what did Captain James Cook actually do in the Pacific?</p>
+    <p>Cook never landed in Fiji. Yet the history of its capital Suva is a direct consequence of his voyages — traceable, step by step, historically verifiable. That's where the series begins — in Fiji — and over nine episodes we explore Cook's epic three voyages across the South Pacific.</p>
+    <p>Nine episodes. Three voyages. One question that won't let go: who was Cook, what did he make of the Pacific — and what did his voyages actually make?</p>
   </div>
 </div>
 
-<!-- SECTION 4: EPISODES -->
+<!-- SECTION 3: EPISODES — parchment -->
 <div class="episodes" id="episodes">
   <div class="section-inner">
     <div class="section-header fade-in">
       <div>
-        <div class="section-label">Series I &mdash; 2026</div>
-        <div class="section-title">Who was Cook — and where did he go?</div>
+        <div class="section-label">Series structure</div>
+        <div class="section-title">Three voyages, three acts</div>
       </div>
-      <span style="font-family:var(--sans);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(26,18,8,.25);">Episodes 2 &amp; 3 coming</span>
+      <a href="#episodes" class="section-link">Full episode guide →</a>
     </div>
-
-    <!-- Ep 1 — Featured with SoundCloud player -->
-    <div class="ep-featured fade-in">
-      <div class="ep-featured-inner">
-        <div class="ep-feat-num">1</div>
-        <div>
-          <div class="ep-feat-badge"><span class="ep-badge listen">Available now</span></div>
-          <div class="ep-feat-title">The Man from the Moors</div>
-          <div class="ep-feat-desc">James Cook was born in North Yorkshire, learned to sail in Whitby, and was appointed to command an expedition to explore the Pacific. With Peter Moore, author of <em>Endeavour: the Ship and Attitude that Changed the World</em>.</div>
-        </div>
-      </div>
-      <div class="ep-player-wrap">
-        <div class="ep-player-label">Listen &mdash; Episode 1</div>
-        <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media"
-          src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2391641229&color=%23c69030&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
-          style="display:block;"></iframe>
-      </div>
+    <div class="act-row fade-in">
+      <div class="act-card"><div class="act-num">I</div><div class="act-ship">HM Bark Endeavour</div><div class="act-title">The First Voyage</div><div class="act-eps">Episodes 1–3 · 1768–1771</div></div>
+      <div class="act-card"><div class="act-num">II</div><div class="act-ship">Resolution &amp; Adventure</div><div class="act-title">The Second Voyage</div><div class="act-eps">Episodes 4–6 · 1772–1775</div></div>
+      <div class="act-card"><div class="act-num">III</div><div class="act-ship">Resolution &amp; Discovery</div><div class="act-title">The Third Voyage</div><div class="act-eps">Episodes 7–9 · 1776–1779</div></div>
     </div>
-
-    <!-- Eps 2 & 3 — Coming soon -->
-    <div class="ep-coming-grid fade-in">
-      <div class="ep-coming-card">
-        <div class="ep-coming-num">2</div>
-        <div>
-          <div class="ep-title">The Honest Ship</div>
-          <div class="ep-desc">Banks, the Admiralty, and the question of what the voyages were actually for.</div>
-        </div>
-        <div class="ep-badge soon">Coming</div>
-      </div>
-      <div class="ep-coming-card">
-        <div class="ep-coming-num">3</div>
-        <div>
-          <div class="ep-title">Matavai Bay</div>
-          <div class="ep-desc">Tahiti in 1769 &mdash; before it became &ldquo;Tahiti&rdquo;. What the Transit expedition actually found.</div>
-        </div>
-        <div class="ep-badge soon">Coming</div>
-      </div>
+    <div class="ep-list fade-in">
+      <div class="ep-item live"><div class="ep-n">1</div><div><div class="ep-title">Arcadia</div><div class="ep-desc">The anchor drops in Matavai Bay. Who was this man — and where have we landed?</div></div><a href="ep1.html" class="ep-badge listen">Listen</a></div>
+      <div class="ep-item"><div class="ep-n">2</div><div><div class="ep-title">Endeavour</div><div class="ep-desc">The ship that made the voyage possible — and the collier's boy who sailed her.</div></div><div class="ep-badge ready">Available</div></div>
+      <div class="ep-item"><div class="ep-n">3</div><div><div class="ep-title">The Instruments</div><div class="ep-desc">Cook's navigation — the longitude problem, the chronometer, and what precision cost.</div></div><div class="ep-badge ready">Available</div></div>
+      <div class="ep-item"><div class="ep-n">4</div><div><div class="ep-title">The Star Path</div><div class="ep-desc">Pacific wayfinding, Tupaia's chart, and the knowledge that wasn't carried home.</div></div><div class="ep-badge ready">Available</div></div>
+      <div class="ep-item"><div class="ep-n">5</div><div><div class="ep-title">Return and Reckoning</div><div class="ep-desc">The second voyage — the same islands, a different world.</div></div><div class="ep-badge soon">12 Jul</div></div>
+      <div class="ep-item"><div class="ep-n">6</div><div><div class="ep-title">Vatoa</div><div class="ep-desc">Four lines in a journal. The moment the whole series turns on.</div></div><div class="ep-badge soon">12 Jul</div></div>
+      <div class="ep-item"><div class="ep-n">7</div><div><div class="ep-title">Then and Now</div><div class="ep-desc">The tourist economy, Beaglehole's cruises, the explorer-tourist parallel.</div></div><div class="ep-badge soon">Coming</div></div>
+      <div class="ep-item"><div class="ep-n">8</div><div><div class="ep-title">Four Lines in a Journal</div><div class="ep-desc">The Fiji chain of causation and the long consequence of Cook's Pacific.</div></div><div class="ep-badge soon">Coming</div></div>
+      <div class="ep-item"><div class="ep-n">9</div><div><div class="ep-title">Making the Myth</div><div class="ep-desc">From Hawkesworth to the statue wars — how the legend was built, layer by layer.</div></div><div class="ep-badge soon">Coming</div></div>
     </div>
-
   </div>
 </div>
 
@@ -337,6 +247,7 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
   <div class="footer-brand">Cook in the Pacific: Then and Now</div>
   <ul class="footer-links">
     <li><a href="#episodes">Episodes</a></li>
+    <li><a href="map.html">Map</a></li>
     <li><a href="#about">About</a></li>
     <li><a href="https://philreevell.com">Phil Reevell</a></li>
   </ul>
@@ -347,167 +258,6 @@ const nav = document.getElementById('main-nav');
 window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>80);},{passive:true});
 const obs = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
 document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
-
-// ─── COOK VOYAGES MAP ──────────────────────────────────────────────────────
-(function initCookMap() {
-  if (typeof L === 'undefined') { setTimeout(initCookMap, 150); return; }
-  const el = document.getElementById('map-embed');
-  if (!el) return;
-
-  const map = L.map('map-embed', { center:[-15,-170], zoom:3, zoomControl:true, attributionControl:true });
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
-    { attribution:'Tiles &copy; Esri', maxZoom:13 }).addTo(map);
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Reference/MapServer/tile/{z}/{y}/{x}',
-    { attribution:'', maxZoom:13, opacity:0.7 }).addTo(map);
-
-  const V1='#1b3a4b', V2='#8b3a1a', V3='#2a5a3a';
-
-  const LOCS = [
-    { id:'matavai', name:'Matavai Bay, Tahiti', lat:-17.494, lon:-149.494, type:'extended',
-      typeLabel:'Extended stay \u2014 four visits across three voyages',
-      totalDays:'~140 days \u00b7 most-visited anchorage in the journals',
-      visits:[
-        {l:'Voyage I \u00b7 April\u2013July 1769',        d:'~90 days', c:V1},
-        {l:'Voyage II \u00b7 August\u2013September 1773', d:'~30 days', c:V2},
-        {l:'Voyage II (return) \u00b7 April\u2013May 1774',d:'~20 days',c:V2},
-        {l:'Voyage III \u00b7 August\u2013September 1777',d:'~14 days', c:V3},
-      ],
-      qFirst:'the whole face of the Country wore a most delightfull aspect.',
-      qReturn:'The Natives visited us with great freedom, and without expressing the least sign of mistrust or fear\u2026 they expressed great joy at seeing us.',
-      notes:'The place Cook returned to more than anywhere else. Matavai Bay was the anchorage of the Transit of Venus in 1769 and became, through the Hawkesworth account and the Hodges paintings, the European image of the Pacific. By the third voyage Cook knew where the fresh water ran, who the chiefs were, and what was worth trading.',
-      ctx:'The LMS sent the Duff to Matavai Bay in 1797 because Cook\u2019s journals had described the anchorage so precisely that the missionaries could navigate directly to it. The bay Cook used as a working harbour became the entry point for everything the series traces in later episodes.',
-    },
-    { id:'raiatea', name:'Raiatea \u2014 Tupaia\u2019s Home', lat:-16.83, lon:-151.44, type:'returns',
-      typeLabel:'Return visit \u2014 two voyages',
-      totalDays:'~25 days across two voyages',
-      visits:[
-        {l:'Voyage I \u00b7 July 1769',                                   d:'~8 days', c:V1},
-        {l:'Voyage II \u00b7 August\u2013September 1773 & 1774',           d:'~17 days',c:V2},
-      ],
-      qFirst:'took possession of the Island and the adjacent lands in the name and for the use of His Majesty King George the Third.',
-      qReturn:'The Inhabitants of these Islands are the most Friendly, hospitable and Courteous people I ever met with.',
-      notes:'Tupaia\u2019s home island \u2014 the island he left with Cook in July 1769 and never returned to. Cook came back twice without him. The possession ceremony of 1769 is recorded in the journal in the same breath as praise for the people: precision and annexation in a single sentence.',
-      ctx:'The charts as possession. The Raiatea entry is one of the clearest examples of the \u201cwith the consent of the natives\u201d clause \u2014 the Admiralty\u2019s instruction \u2014 not in action.',
-    },
-    { id:'queen-charlotte', name:'Queen Charlotte Sound, New Zealand', lat:-41.174, lon:174.277, type:'extended',
-      typeLabel:'Extended stay \u2014 five visits, three voyages',
-      totalDays:'~80 days across five visits',
-      visits:[
-        {l:'Voyage I \u00b7 January\u2013February 1770',    d:'~23 days',c:V1},
-        {l:'Voyage II \u00b7 May\u2013June 1773',           d:'~19 days',c:V2},
-        {l:'Voyage II \u00b7 October\u2013November 1773',   d:'~16 days',c:V2},
-        {l:'Voyage II \u00b7 October 1774',                 d:'~11 days',c:V2},
-        {l:'Voyage III \u00b7 February 1777',               d:'~10 days',c:V3},
-      ],
-      qFirst:'The country about this Sound is exceedingly well wooded; fine timber trees, some of them very large. The soil in many places is good and capable of producing any kind of grain.',
-      qReturn:'The Natives visited us with great freedom, and without expressing the least sign of mistrust or fear, tho\u2019 some of their late conduct had given us reason to think they were not altogether without apprehensions.',
-      notes:'Cook\u2019s principal base in New Zealand across three voyages \u2014 more time spent here than anywhere outside England except Tahiti. The relationship with the local M\u0101ori was the most sustained of any in the journals \u2014 and the most complicated, particularly after the killing of ten Adventure crew members here in 1773 while Cook was elsewhere. His choice not to seek retribution defined his deterrence thinking.',
-      ctx:'Hampton Sides\u2019 argument in The Wide Wide Sea traces the logic of Cook\u2019s deterrence policy from Queen Charlotte Sound through Nomuka to Kealakekua Bay. The policy that produced the journal\u2019s warmest entries for M\u0101ori was the same policy that ended his life.',
-    },
-    { id:'tonga', name:'Tonga \u2014 Friendly Islands', lat:-21.147, lon:-175.252, type:'extended',
-      typeLabel:'Extended stay \u2014 three visits, two voyages',
-      totalDays:'~82 days \u00b7 named the Friendly Islands 1773',
-      visits:[
-        {l:'Voyage II \u00b7 October 1773 (Tongatapu)',              d:'~5 days', c:V2},
-        {l:'Voyage II \u00b7 June\u2013July 1774 (Nomuka)',          d:'~7 days', c:V2},
-        {l:'Voyage III \u00b7 May\u2013July 1777 (Tongatapu & Ha\u02bbapai)',d:'~70 days',c:V3},
-      ],
-      qFirst:'The friendly and peaceable behaviour of these people gave this group the name of the Friendly Islands, and they deserve the name.',
-      qReturn:'We were received with every demonstration of friendship: the King came off in his canoe and conducted us to the shore. I never saw greater festivity or more apparent marks of joy than were testified by these people on our landing.',
-      notes:'Cook named the Tongan islands the Friendly Islands in 1773. Tongan oral tradition records that the chiefs had been planning to kill him that same evening \u2014 at the ceremony he attended \u2014 but could not agree on a method in time. On the third voyage, with two months in Tonga, Finau considered it again. The \u201cFriendly Islands\u201d name encoded the European view so completely that the Tongan perspective \u2014 calculating, watching, deciding \u2014 remained invisible until Mariner\u2019s Account in 1805.',
-      ctx:'The clearest single example in the series of the gap between the journal and the shore. The Tonga naming entry and the oral tradition, held against each other, are the argument about what Cook recorded and what was actually happening.',
-    },
-    { id:'nomuka', name:'Nomuka (Annamocka)', lat:-20.237, lon:-174.802, type:'returns',
-      typeLabel:'Return visit \u2014 two voyages',
-      totalDays:'~12 days across two visits',
-      visits:[
-        {l:'Voyage II \u00b7 27\u201329 June 1774',d:'3 days', c:V2},
-        {l:'Voyage III \u00b7 May 1777',          d:'~9 days',c:V3},
-      ],
-      qFirst:'My lenity in this affair and the easy manner they had obtained this gun which they thought secure in their possession encouraged them to commit acts of greater violence, as will soon appear.',
-      qReturn:'The people conducted themselves with great propriety and we trafficked with them without any disturbance.',
-      notes:'The 1774 visit produced one of the series\u2019 most humanising journal entries \u2014 the old woman, the young woman, the flight to the boat \u2014 and one of its most troubling: the shooting over a stolen stanchion. The 1777 return was uneventful. Cook noted the people\u2019s \u201cgreat propriety.\u201d No entry in the journal connects the two visits. The gap is the point.',
-      ctx:'Three days, a gun stolen, a shooting, a public humiliation. The 1777 return \u2014 peaceful \u2014 is the series\u2019 silent counterpoint. Same island. Same people. Three years apart.',
-    },
-    { id:'hawaii', name:'Kealakekua Bay, Hawai\u02bbi', lat:19.477, lon:-155.921, type:'returns',
-      typeLabel:'Return visit \u2014 two visits within one voyage',
-      totalDays:'~90 days total \u00b7 Cook killed on return',
-      visits:[
-        {l:'Voyage III \u00b7 January 1778 (first contact, Kaua\u02bbi)',d:'~14 days',c:V3},
-        {l:'Voyage III \u00b7 Nov 1778 \u2013 Feb 1779 (Kealakekua)',   d:'~80 days',c:V3},
-      ],
-      qFirst:'How shall we account for this Nation spreading itself so far over this vast ocean? We find them from New Zealand to the South, to these islands to the North, and from Easter Island to the Hebrides.',
-      qReturn:'The very instant I landed the Throng was such that it was with Difficulty I could get a few yards from the boats. The people at the same time shewing the utmost respect, some prostrating themselves while others held their hands up.',
-      notes:'Cook arrived at Kealakekua Bay during the Makahiki festival, was received with extraordinary ceremony, and departed after six weeks. The foremast cracked. He was forced to return \u2014 outside the festival season, to a different reception. The stolen cutter. The hostage attempt. The beach. Cook was fifty. The journal was finished by Lieutenant James King.',
-      ctx:'The endpoint of the series\u2019 arc. Kealakekua Bay was not an accident but the conclusion of a trajectory visible across all three voyages \u2014 the increasing reliance on coercion, the thinning of the careful precision of the early journals, the exhaustion the letters to Walker hint at.',
-    },
-  ];
-
-  let cur = -1;
-
-  function mkIcon(loc) {
-    const ext=loc.type==='extended', ret=loc.type==='returns', fatal=loc.id==='hawaii';
-    const r=ext?11:ret?8:6, sw=2;
-    let fill,stroke,inner;
-    if(fatal)    {fill='#1b3a4b';stroke='rgba(27,58,75,.5)';  inner=`<circle cx="${r+sw}" cy="${r+sw}" r="${Math.max(2,r*.35)}" fill="rgba(250,244,230,.8)"/>`;}
-    else if(ext) {fill='#8b3a1a';stroke='rgba(139,58,26,.4)'; inner=`<circle cx="${r+sw}" cy="${r+sw}" r="${Math.max(2,r*.38)}" fill="rgba(250,244,230,.7)"/>`;}
-    else         {fill='none';   stroke='#8b3a1a';             inner='';}
-    const sz=(r+sw)*2, cx=r+sw;
-    return L.divIcon({className:'',iconSize:[sz,sz],iconAnchor:[cx,cx],popupAnchor:[0,-(cx+4)],
-      html:`<svg width="${sz}" height="${sz}" xmlns="http://www.w3.org/2000/svg"><circle cx="${cx}" cy="${cx}" r="${r+sw*.5}" fill="${stroke}" opacity=".3"/><circle cx="${cx}" cy="${cx}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>${inner}</svg>`});
-  }
-
-  LOCS.forEach((loc,idx) => {
-    const m = L.marker([loc.lat,loc.lon],{icon:mkIcon(loc)}).addTo(map);
-    m.bindPopup(
-      `<div class="lp-name">${loc.name}</div>`+
-      `<div class="lp-date">${loc.typeLabel}</div>`+
-      `<div style="font-size:.73rem;font-style:italic;color:rgba(26,18,10,.42);margin-bottom:.3rem;">${loc.totalDays}</div>`+
-      `<div class="lp-open" onclick="cookMapOpen(${idx})">Open full entry &rarr;</div>`,
-      {maxWidth:240}
-    );
-    m.on('click',()=>{cur=idx;});
-  });
-
-  window.cookMapOpen = function(idx) {
-    const loc=LOCS[idx]; cur=idx;
-    document.getElementById('mp-type').textContent = loc.typeLabel;
-    document.getElementById('mp-name').textContent = loc.name;
-    document.getElementById('mp-date').textContent = loc.totalDays;
-
-    const wrap=document.getElementById('mp-visits-wrap');
-    wrap.innerHTML='<div class="mp-visits-label">Visit History</div>';
-    loc.visits.forEach(v=>{
-      const row=document.createElement('div'); row.className='mp-visit-row';
-      const dot=document.createElement('div'); dot.className='mp-visit-dot'; dot.style.background=v.c;
-      const line=document.createElement('div'); line.className='mp-visit-line';
-      line.innerHTML=`<strong>${v.l}</strong> \u00b7 ${v.d}`;
-      row.appendChild(dot); row.appendChild(line); wrap.appendChild(row);
-    });
-    const tot=document.createElement('div'); tot.className='mp-total';
-    tot.textContent=loc.totalDays; wrap.appendChild(tot);
-
-    document.getElementById('mp-quote-first').textContent='\u201c'+loc.qFirst+'\u201d';
-    const rb=document.getElementById('mp-return-block');
-    if(loc.qReturn){
-      rb.style.display='block';
-      document.getElementById('mp-quote-return').textContent='\u201c'+loc.qReturn+'\u201d';
-    } else { rb.style.display='none'; }
-    document.getElementById('mp-notes').textContent=loc.notes;
-    document.getElementById('mp-context-text').textContent=loc.ctx;
-
-    map.flyTo([loc.lat,loc.lon],Math.max(map.getZoom(),5),{duration:1.1});
-    document.getElementById('map-panel').classList.add('open');
-    map.closePopup();
-  };
-
-  document.getElementById('mp-close-btn').addEventListener('click',()=>document.getElementById('map-panel').classList.remove('open'));
-  document.getElementById('map-btn-next').addEventListener('click',()=>cookMapOpen((cur+1)%LOCS.length));
-  document.getElementById('map-btn-prev').addEventListener('click',()=>cookMapOpen((cur-1+LOCS.length)%LOCS.length));
-  setTimeout(()=>cookMapOpen(LOCS.findIndex(l=>l.id==='matavai')),900);
-}());
-// ───────────────────────────────────────────────────────────────────────────
-
 </script>
 </body>
 </html>
