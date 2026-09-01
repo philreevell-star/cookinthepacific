@@ -1,481 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Turtle Isle — Cook's Fiji Encounter, July 1774</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --parchment: #f5edcf;
-    --parchment-dark: #e8d9a8;
-    --ink: #1a1208;
-    --ink-faded: #4a3b20;
-    --rust: #8b3a2a;
-    --gold: #c8963c;
-    --sea: #2a4a5e;
-    --sea-light: #4a7a8e;
-    --footnote-bg: #f0e6c4;
-    --border: #c4a85a;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background-color: #2a2014;
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    color: var(--ink);
-    min-height: 100vh;
-  }
-
-  /* ── Parchment texture overlay ── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .page-wrapper {
-    position: relative;
-    z-index: 1;
-    max-width: 860px;
-    margin: 0 auto;
-    background: var(--parchment);
-    box-shadow: 0 0 80px rgba(0,0,0,0.7);
-    padding: 60px 70px 80px;
-    border-left: 4px solid var(--border);
-    border-right: 4px solid var(--border);
-  }
-
-  /* ── Masthead ── */
-  .masthead {
-    text-align: center;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 36px;
-    margin-bottom: 48px;
-    position: relative;
-  }
-
-  .series-tag {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--rust);
-    margin-bottom: 18px;
-  }
-
-  .masthead h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.8rem;
-    font-weight: 700;
-    line-height: 1.15;
-    color: var(--ink);
-    margin-bottom: 10px;
-  }
-
-  .masthead h1 em {
-    font-style: italic;
-    color: var(--sea);
-  }
-
-  .masthead-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1.2rem;
-    color: var(--ink-faded);
-    margin-bottom: 16px;
-  }
-
-  .masthead-date {
-    font-size: 0.85rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-
-  .masthead::after {
-    content: '✦';
-    display: block;
-    font-size: 1.2rem;
-    color: var(--gold);
-    margin-top: 24px;
-  }
-
-  /* ── Section headings ── */
-  h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.45rem;
-    font-weight: 700;
-    color: var(--sea);
-    margin: 48px 0 20px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border);
-    letter-spacing: 0.02em;
-  }
-
-  h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--rust);
-    margin: 32px 0 12px;
-  }
-
-  /* ── Body text ── */
-  p {
-    font-size: 1.08rem;
-    line-height: 1.85;
-    color: var(--ink);
-    margin-bottom: 1.1em;
-  }
-
-  /* ── Journal entry block ── */
-  .journal-block {
-    background: #ede2be;
-    border-left: 4px solid var(--rust);
-    border-radius: 2px;
-    padding: 32px 36px;
-    margin: 32px 0;
-    position: relative;
-  }
-
-  .journal-block::before {
-    content: 'Journal of HMS Resolution — James Cook';
-    display: block;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--rust);
-    margin-bottom: 16px;
-    font-weight: 600;
-  }
-
-  .journal-block p {
-    font-family: 'IM Fell English', Georgia, serif;
-    font-size: 1.0rem;
-    line-height: 2.0;
-    color: #2a1a08;
-  }
-
-  .journal-block .source-note {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 0.82rem;
-    color: var(--ink-faded);
-    margin-top: 18px;
-    margin-bottom: 0;
-    border-top: 1px solid var(--border);
-    padding-top: 10px;
-  }
-
-  /* ── Footnote markers ── */
-  .fn {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.72rem;
-    vertical-align: super;
-    color: var(--rust);
-    font-weight: 700;
-    cursor: pointer;
-    line-height: 0;
-    margin-left: 1px;
-    text-decoration: none;
-    border-bottom: 1px dotted var(--rust);
-  }
-  .fn:hover { background: rgba(139,58,42,0.1); border-radius: 2px; }
-
-  /* ── Map section ── */
-  .map-section {
-    background: var(--sea);
-    border-radius: 4px;
-    padding: 24px;
-    margin: 40px 0;
-    color: white;
-  }
-
-  .map-section h3 {
-    color: var(--parchment-dark);
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    font-size: 0.9rem;
-    margin-top: 0;
-    margin-bottom: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-    padding-bottom: 10px;
-  }
-
-  .map-embed-frame {
-    width: 100%;
-    height: 420px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 3px;
-    background: #1a3344;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .map-placeholder-text {
-    color: rgba(255,255,255,0.5);
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 1rem;
-    text-align: center;
-    padding: 0 40px;
-  }
-
-  /* REPLACE THIS ENTIRE .map-embed-frame div with:
-     <iframe src="YOUR_GOOGLE_MY_MAPS_EMBED_URL" 
-             width="100%" height="420" 
-             style="border:2px solid rgba(255,255,255,0.2); border-radius:3px;" 
-             allowfullscreen loading="lazy"></iframe>
-    <div id="vatoa-map" style="width:100%;height:420px;margin:16px 0;border:1px solid rgba(198,144,48,0.2);"></div>
-    <script>
-      (function() {
-        var map = L.map('vatoa-map').setView([-19.82, 178.24], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          maxZoom: 18
-        }).addTo(map);
-        L.marker([-19.82, 178.24]).addTo(map)
-          .bindPopup('<b>Vatoa</b><br>Turtle Island, Fiji').openPopup();
-      })();
-    </script>
-
-  .map-caption {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 0.88rem;
-    color: rgba(255,255,255,0.7);
-    margin-top: 14px;
-    margin-bottom: 0;
-    line-height: 1.5;
-  }
-
-  /* ── Cook's route annotation box ── */
-  .route-box {
-    background: var(--footnote-bg);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 20px 24px;
-    margin: 28px 0;
-  }
-
-  .route-box h4 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--sea);
-    margin-bottom: 12px;
-  }
-
-  .route-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 10px;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: var(--ink-faded);
-  }
-
-  .route-step .compass {
-    font-weight: 700;
-    color: var(--rust);
-    min-width: 50px;
-    font-size: 0.85rem;
-    padding-top: 2px;
-  }
-
-  /* ── Footnote section ── */
-  .footnotes {
-    border-top: 2px solid var(--border);
-    margin-top: 60px;
-    padding-top: 32px;
-  }
-
-  .footnotes h2 {
-    font-size: 1.1rem;
-    margin-top: 0;
-    margin-bottom: 24px;
-    color: var(--ink-faded);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .footnote {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    gap: 8px 16px;
-    margin-bottom: 28px;
-    padding-bottom: 28px;
-    border-bottom: 1px dashed var(--border);
-  }
-
-  .footnote:last-child { border-bottom: none; }
-
-  .fn-number {
-    font-family: 'IM Fell English', serif;
-    font-size: 1.2rem;
-    color: var(--rust);
-    font-weight: 700;
-    padding-top: 2px;
-    text-align: right;
-  }
-
-  .fn-body h4 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.0rem;
-    font-weight: 600;
-    color: var(--sea);
-    margin-bottom: 8px;
-    letter-spacing: 0.03em;
-  }
-
-  .fn-body p {
-    font-size: 0.94rem;
-    line-height: 1.75;
-    color: var(--ink-faded);
-  }
-
-  .fn-body .aside {
-    font-style: italic;
-    font-size: 0.88rem;
-    color: #7a6040;
-    border-left: 2px solid var(--gold);
-    padding-left: 12px;
-    margin-top: 10px;
-  }
-
-  /* ── Special case badge ── */
-  .special-badge {
-    display: inline-block;
-    background: var(--rust);
-    color: white;
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 2px;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
-
-  /* ── Pull quote ── */
-  .pull-quote {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 1.4rem;
-    line-height: 1.6;
-    color: var(--sea);
-    text-align: center;
-    padding: 32px 40px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin: 40px 0;
-  }
-
-  /* ── Divider ── */
-  .ornament {
-    text-align: center;
-    color: var(--gold);
-    font-size: 1.1rem;
-    letter-spacing: 0.6em;
-    margin: 40px 0 32px;
-  }
-
-  /* ── Google Earth instructions ── */
-  .ge-instructions {
-    background: #e8f0f5;
-    border: 1px solid #a8c4d4;
-    border-radius: 3px;
-    padding: 20px 24px;
-    margin: 20px 0;
-  }
-
-  .ge-instructions h4 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--sea);
-    margin-bottom: 12px;
-  }
-
-  .ge-instructions code {
-    display: block;
-    background: white;
-    border: 1px solid #c0d8e4;
-    padding: 10px 14px;
-    font-size: 0.82rem;
-    color: #1a3a4a;
-    border-radius: 2px;
-    margin: 8px 0;
-    word-break: break-all;
-    font-family: 'Courier New', monospace;
-  }
-
-  .ge-instructions p {
-    font-size: 0.9rem;
-    color: var(--sea);
-    margin-bottom: 6px;
-    line-height: 1.65;
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 720px) {
-    .page-wrapper { padding: 32px 24px 48px; }
-    .masthead h1 { font-size: 2rem; }
-    .journal-block { padding: 20px 18px; }
-    .pull-quote { padding: 20px 16px; font-size: 1.15rem; }
-  }
-</style>
-
-<style>
-.cook-nav{position:sticky;top:0;z-index:9999;background:rgba(7,15,24,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(198,144,48,0.32);display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:52px;}
-.cook-nav-logo{font-family:'Playfair Display','Libre Baskerville',Georgia,serif;font-style:italic;font-size:1rem;color:#c69030;text-decoration:none;display:flex;align-items:baseline;gap:8px;}
-.cook-nav-logo em{font-style:normal;font-family:system-ui,sans-serif;font-size:0.58rem;letter-spacing:0.28em;text-transform:uppercase;color:rgba(242,232,204,0.32);font-weight:300;}
-.cook-nav-links{display:flex;gap:28px;list-style:none;}
-.cook-nav-links a{font-family:system-ui,sans-serif;font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;color:rgba(242,232,204,0.7);text-decoration:none;transition:color 0.2s;}
-.cook-nav-links a:hover,.cook-nav-links a.active{color:#c69030;}
-@media(max-width:700px){.cook-nav{padding:0 16px;}.cook-nav-links{display:none;}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vatoa — Turtle Island · Cook in the Pacific</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <style>
+    :root {
+      --ocean: #0b1c2a;
+      --ocean-mid: #0f2235;
+      --parch: #f2e8cc;
+      --gilt: #c69030;
+      --gilt-lt: #e0ac3a;
+      --cream: #ede8de;
+      --ink: #1a1208;
+      --rule: rgba(242,232,204,0.12);
+      --rule-lt: rgba(242,232,204,0.07);
+      --parch-dim: rgba(242,232,204,0.6);
+      --parch-mute: rgba(242,232,204,0.35);
+      --display: 'Libre Baskerville', Georgia, serif;
+      --serif: 'Source Serif 4', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--ocean);
+      color: var(--parch);
+      font-family: var(--serif);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    a { color: var(--gilt); text-decoration: none; }
+    a:hover { color: var(--gilt-lt); }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 60px;
+      border-bottom: 1px solid var(--rule);
+      background: rgba(11,28,42,0.96);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      font-family: var(--display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--parch);
+      text-decoration: none;
+    }
+    .nav-brand em { font-weight: 400; color: var(--gilt); }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+    }
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--parch-dim);
+    }
+    .nav-links a:hover { color: var(--parch); }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--ocean-mid);
+      border-bottom: 1px solid var(--rule);
+      padding: 64px 48px 56px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .ep-label {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ep-label::before {
+      content: "";
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--gilt);
+      opacity: 0.7;
+    }
+    .ep-title {
+      font-family: var(--display);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+    .ep-title em { font-weight: 400; color: var(--parch-dim); }
+    .ep-subtitle {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--parch-dim);
+      margin-bottom: 32px;
+    }
+
+    /* ── PLAYER ── */
+    .player-block {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--rule);
+      padding: 24px 28px;
+      margin-bottom: 0;
+    }
+    .player-label {
+      font-family: var(--sans);
+      font-size: 0.57rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content-wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 64px 48px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── SHOWNOTES ── */
+    .shownotes h2 {
+      font-family: var(--display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .shownotes p {
+      font-family: var(--serif);
+      font-size: 0.97rem;
+      line-height: 1.78;
+      color: var(--parch-dim);
+      margin-bottom: 16px;
+    }
+    .shownotes p strong {
+      color: var(--parch);
+      font-weight: 700;
+    }
+
+    /* ── CHAPTERS ── */
+    .chapters {
+      margin: 32px 0;
+    }
+    .chapters h3 {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .chapter-list {
+      list-style: none;
+      border-top: 1px solid var(--rule-lt);
+    }
+    .chapter-list li {
+      display: flex;
+      gap: 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule-lt);
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      color: var(--parch-dim);
+    }
+    .chapter-list li .ts {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--gilt);
+      min-width: 44px;
+      padding-top: 2px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {}
+    .sidebar-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--rule);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .sidebar-card h3 {
+      font-family: var(--sans);
+      font-size: 0.57rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .sidebar-card p {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--parch-mute);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .sidebar-link {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--gilt);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(198,144,48,0.3);
+      padding-bottom: 2px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .sidebar-link:hover { color: var(--gilt-lt); border-color: rgba(198,144,48,0.6); }
+
+    /* ── MAP ── */
+    .map-section {
+      margin: 40px 0 0;
+    }
+    .map-section h3 {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin-bottom: 8px;
+    }
+    .map-section p {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--parch-mute);
+      margin-bottom: 14px;
+    }
+    #fiji-map {
+      width: 100%;
+      height: 360px;
+      border: 1px solid rgba(198,144,48,0.2);
+    }
+
+    /* ── SOURCES ── */
+    .sources {
+      margin-top: 40px;
+    }
+    .sources h3 {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 14px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+    }
+    .sources ul {
+      list-style: none;
+    }
+    .sources li {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      color: var(--parch-mute);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--rule-lt);
+      line-height: 1.5;
+    }
+    .sources li em { font-style: italic; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ocean-mid);
+      border-top: 1px solid var(--rule);
+      padding: 40px 48px;
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin-bottom: 4px;
+    }
+    .footer-tagline {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--parch-mute);
+    }
+    .footer-col-title {
+      font-family: var(--sans);
+      font-size: 0.57rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 6px; }
+    .footer-links a {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      color: var(--parch-mute);
+    }
+    .footer-links a:hover { color: var(--parch); }
+
+    /* Leaflet popup custom */
+    .leaflet-popup-content-wrapper {
+      background: var(--ocean-mid);
+      color: var(--parch);
+      border: 1px solid var(--gilt);
+      border-radius: 0;
+      font-family: var(--serif);
+    }
+    .leaflet-popup-tip { background: var(--gilt); }
+
+    @media (max-width: 900px) {
+      .content-wrap { grid-template-columns: 1fr; gap: 40px; }
+      nav { padding: 0 20px; }
+      .masthead { padding: 40px 20px 36px; }
+      .content-wrap { padding: 40px 20px; }
+      footer { padding: 32px 20px; }
+    }
+  </style>
+  <style>
+    /* Vatoa page content */
+    .vatoa-body { max-width:760px; margin:0 auto; padding:48px 48px 80px; }
+    .vatoa-body h2 {
+      font-family:var(--display); font-size:1.35rem; font-weight:700;
+      color:var(--parch); margin:36px 0 12px;
+      padding-bottom:10px; border-bottom:1px solid var(--rule);
+    }
+    .vatoa-body h3 {
+      font-family:var(--display); font-size:1.05rem; font-weight:700;
+      color:var(--parch); margin:24px 0 8px;
+    }
+    .vatoa-body p {
+      font-family:var(--serif); font-size:0.97rem; line-height:1.8;
+      color:var(--parch-dim); margin-bottom:16px;
+    }
+    .vatoa-body blockquote {
+      border-left:3px solid var(--gilt); margin:20px 0;
+      padding:2px 0 2px 24px; font-style:italic; color:var(--parch-dim);
+    }
+    /* Override any old Vatoa styles */
+    .masthead, .series-tag, .masthead-title, .masthead-sub,
+    .map-section, .page-wrapper, .annotation-section,
+    .navigation-section, .journal-entry { all:unset; display:block; }
+    .page-wrapper { background:none; }
+    @media(max-width:700px) { .vatoa-body { padding:24px 20px 60px; } }
+  </style>
 </head>
 <body>
-<nav class="cook-nav">
-  <a href="index.html" class="cook-nav-logo">Cook in the Pacific <em>Then &amp; Now</em></a>
-  <ul class="cook-nav-links">
-    <li><a href="index.html#episodes">Episodes</a></li>
-    <li><a href="map.html" class="active">Maps</a></li>
-    <li><a href="index.html#about">About</a></li>
-    <li><a href="https://philreevell.com">Phil Reevell</a></li>
+
+<nav>
+  <a href="index.html" class="nav-brand">Cook in the Pacific <em>Then &amp; Now</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Episodes</a></li>
+    <li><a href="map.html">Maps</a></li>
+    <li><a href="https://philreevell-star.github.io/philreevell/">Phil Reevell</a></li>
   </ul>
 </nav>
 
-<div class="page-wrapper">
+<!-- Masthead -->
+<div style="background:var(--ocean-mid);border-bottom:1px solid var(--rule);">
+  <div style="max-width:1160px;margin:0 auto;padding:56px 48px 48px;">
+    <div style="font-family:var(--sans);font-size:0.6rem;letter-spacing:0.42em;text-transform:uppercase;color:var(--gilt);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+      <span style="display:inline-block;width:20px;height:1px;background:var(--gilt);opacity:0.7;"></span>
+      Cook in the Pacific · Special Account · Second Voyage 1774
+    </div>
+    <h1 style="font-family:var(--display);font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--parch);line-height:1.05;margin-bottom:10px;">Vatoa — Turtle Island</h1>
+    <p style="font-family:var(--serif);font-size:1rem;font-style:italic;color:var(--parch-dim);">2–3 July 1774 · HMS Resolution · Four lines in the journal</p>
+  </div>
+</div>
 
-  <!-- ══════════════════════════════════
-       MASTHEAD
-  ══════════════════════════════════ -->
-  <header class="masthead">
-    <div class="series-tag">Uncharted Waters Podcast · Special Annotation</div>
-    <h1><em>Turtle Isle</em><br>Cook's Fiji Encounter</h1>
-    <div class="masthead-sub">2 – 3 July 1774 · HMS Resolution · Second Voyage</div>
-    <div class="masthead-date">Latitude 19° 48′ S &nbsp;·&nbsp; Longitude 178° 2′ W</div>
-  </header>
+<!-- Back link -->
+<div style="max-width:760px;margin:0 auto;padding:24px 48px 0;">
+  <a href="ep1.html" style="font-family:var(--sans);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gilt);text-decoration:none;">← Episode 1 shownotes</a>
+</div>
 
-  <!-- ══════════════════════════════════
+<!-- Vatoa map -->
+<div style="max-width:760px;margin:0 auto;padding:32px 48px 0;">
+  <div id="vatoa-map" style="width:100%;height:320px;border:1px solid rgba(198,144,48,0.2);"></div>
+  <p style="font-family:var(--serif);font-size:0.8rem;font-style:italic;color:var(--parch-mute);margin-top:8px;">Vatoa, southernmost island Cook sighted in what is now Fiji. Suva lies 280km to the north.</p>
+</div>
+
+<!-- Main content -->
+<div class="vatoa-body">
+<!-- ══════════════════════════════════
        INTRODUCTION
   ══════════════════════════════════ -->
   <span class="special-badge">Special Case — Cook Did Not Land</span>
@@ -622,5 +568,47 @@
   <p>Everything that followed came later.</p>
 
 </div><!-- /page-wrapper -->
+</div>
+
+<footer>
+  <div>
+    <div class="footer-brand">Cook in the Pacific</div>
+    <div class="footer-tagline">Then and Now · Phil Reevell</div>
+  </div>
+  <div>
+    <div class="footer-col-title">Episodes</div>
+    <ul class="footer-links">
+      <li><a href="ep1.html">1 · The Man from the Moors</a></li>
+      <li><a href="index.html#ep2">2 · The Honest Ship</a></li>
+      <li><a href="index.html#ep3">3 · Matavai Bay</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Maps</div>
+    <ul class="footer-links">
+      <li><a href="map.html">Maps hub</a></li>
+      <li><a href="voyage2_arc_map.html">Second Voyage arc</a></li>
+      <li><a href="vatoa_turtle_island_annotated.html">Vatoa account</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Links</div>
+    <ul class="footer-links">
+      <li><a href="https://philreevell-star.github.io/philreevell/">Phil Reevell</a></li>
+      <li><a href="mailto:phil@philreevell.com">phil@philreevell.com</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+var map = L.map('vatoa-map').setView([-19.82, 178.24], 10);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+function dot(ll, color, label, popup) {
+  L.marker(ll, {icon: L.divIcon({className:'',html:'<div style="width:10px;height:10px;background:'+color+';border:2px solid rgba(255,255,255,0.7);border-radius:50%;"></div>',iconSize:[10,10],iconAnchor:[5,5]})})).addTo(map).bindPopup(popup);
+}
+dot([-19.82, 178.24], '#c69030', 'Vatoa', '<b>Vatoa (Turtle Island)</b><br>Cook sighted 2–3 Jul 1774');
+</script>
 </body>
 </html>
