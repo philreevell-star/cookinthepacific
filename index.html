@@ -160,11 +160,62 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
     padding-bottom: 10px;
     border-bottom: 1px solid var(--rule);
   }
-  .voyage-pending .ep-item.pending {
-    opacity: 0.5;
+  .ep-list {
+    border-top: 1px solid var(--rule-lt);
+    margin-bottom: 0;
   }
-  .voyage-pending .ep-item.pending .ep-title {
-    color: var(--parch-dim);
+  .ep-item {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-lt);
+    gap: 14px;
+  }
+  .ep-item.pending { opacity: 0.45; }
+  .ep-n {
+    font-family: var(--display);
+    font-size: 1.4rem;
+    font-style: italic;
+    font-weight: 700;
+    color: rgba(198,144,48,0.25);
+    line-height: 1;
+    text-align: right;
+  }
+  .ep-title {
+    font-family: var(--display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white, var(--parch));
+  }
+  .ep-desc {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    color: rgba(242,232,204,0.45);
+    margin-top: 2px;
+  }
+  .ep-badge {
+    font-family: var(--sans);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 4px 10px;
+    white-space: nowrap;
+    color: rgba(242,232,204,0.3);
+    border: 1px solid rgba(198,144,48,0.15);
+    text-decoration: none;
+  }
+  .ep-badge.listen {
+    background: rgba(198,144,48,0.15);
+    color: var(--gilt);
+    border-color: rgba(198,144,48,0.35);
+  }
+  .ep-badge.listen:hover {
+    background: rgba(198,144,48,0.25);
+  }
+  .ep-badge.soon {
+    opacity: 0.6;
   }
 
   </style>
@@ -227,7 +278,7 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
 </div>
 
 <!-- SECTION 3: EPISODES — parchment -->
-<div class="episodes" id="episodes">
+<div class="episodes" style="background:var(--ocean-mid,#0f2235);" id="episodes">
   <div class="section-inner">
     <div class="section-header fade-in">
       <div>
