@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About the Project · Cook in the Pacific</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  
+  <style>
+    :root {
+      --ocean: #0b1c2a;
+      --ocean-mid: #0f2235;
+      --parch: #f2e8cc;
+      --gilt: #c69030;
+      --gilt-lt: #e0ac3a;
+      --cream: #ede8de;
+      --ink: #1a1208;
+      --rule: rgba(242,232,204,0.12);
+      --rule-lt: rgba(242,232,204,0.07);
+      --parch-dim: rgba(242,232,204,0.6);
+      --parch-mute: rgba(242,232,204,0.35);
+      --display: 'Libre Baskerville', Georgia, serif;
+      --serif: 'Source Serif 4', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--ocean);
+      color: var(--parch);
+      font-family: var(--serif);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    a { color: var(--gilt); text-decoration: none; }
+    a:hover { color: var(--gilt-lt); }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 60px;
+      border-bottom: 1px solid var(--rule);
+      background: rgba(11,28,42,0.96);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      font-family: var(--display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--parch);
+      text-decoration: none;
+    }
+    .nav-brand em { font-weight: 400; color: var(--gilt); }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+    }
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--parch-dim);
+    }
+    .nav-links a:hover { color: var(--parch); }
+
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--ocean-mid);
+      border-bottom: 1px solid var(--rule);
+      padding: 64px 48px 56px;
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+    .ep-label {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ep-label::before {
+      content: "";
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--gilt);
+      opacity: 0.7;
+    }
+    .ep-title {
+      font-family: var(--display);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+    .ep-title em { font-weight: 400; color: var(--parch-dim); }
+    .ep-subtitle {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--parch-dim);
+      margin-bottom: 32px;
+    }
+
+    /* ── PLAYER ── */
+    .player-block {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--rule);
+      padding: 24px 28px;
+      margin-bottom: 0;
+    }
+    .player-label {
+      font-family: var(--sans);
+      font-size: 0.57rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content-wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 64px 48px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── SHOWNOTES ── */
+    .shownotes h2 {
+      font-family: var(--display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .shownotes p {
+      font-family: var(--serif);
+      font-size: 0.97rem;
+      line-height: 1.78;
+      color: var(--parch-dim);
+      margin-bottom: 16px;
+    }
+    .shownotes p strong {
+      color: var(--parch);
+      font-weight: 700;
+    }
+
+    /* ── CHAPTERS ── */
+    .chapters {
+      margin: 32px 0;
+    }
+    .chapters h3 {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .chapter-list {
+      list-style: none;
+      border-top: 1px solid var(--rule-lt);
+    }
+    .chapter-list li {
+      display: flex;
+      gap: 20px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule-lt);
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      color: var(--parch-dim);
+    }
+    .chapter-list li .ts {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--gilt);
+      min-width: 44px;
+      padding-top: 2px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {}
+    .sidebar-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--rule);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .sidebar-card h3 {
+      font-family: var(--sans);
+      font-size: 0.57rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .sidebar-card p {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--parch-mute);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .sidebar-link {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--gilt);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(198,144,48,0.3);
+      padding-bottom: 2px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .sidebar-link:hover { color: var(--gilt-lt); border-color: rgba(198,144,48,0.6); }
+
+    /* ── MAP ── */
+    .map-section {
+      margin: 40px 0 0;
+    }
+    .map-section h3 {
+      font-family: var(--display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin-bottom: 8px;
+    }
+    .map-section p {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--parch-mute);
+      margin-bottom: 14px;
+    }
+    #fiji-map {
+      width: 100%;
+      height: 360px;
+      border: 1px solid rgba(198,144,48,0.2);
+    }
+
+    /* ── SOURCES ── */
+    .sources {
+      margin-top: 40px;
+    }
+    .sources h3 {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 14px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+    }
+    .sources ul {
+      list-style: none;
+    }
+    .sources li {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      color: var(--parch-mute);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--rule-lt);
+      line-height: 1.5;
+    }
+    .sources li em { font-style: italic; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ocean-mid);
+      border-top: 1px solid var(--rule);
+      padding: 40px 48px;
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin-bottom: 4px;
+    }
+    .footer-tagline {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--parch-mute);
+    }
+    .footer-col-title {
+      font-family: var(--sans);
+      font-size: 0.57rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 6px; }
+    .footer-links a {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      color: var(--parch-mute);
+    }
+    .footer-links a:hover { color: var(--parch); }
+
+    /* Leaflet popup custom */
+    .leaflet-popup-content-wrapper {
+      background: var(--ocean-mid);
+      color: var(--parch);
+      border: 1px solid var(--gilt);
+      border-radius: 0;
+      font-family: var(--serif);
+    }
+    .leaflet-popup-tip { background: var(--gilt); }
+
+    @media (max-width: 900px) {
+      .content-wrap { grid-template-columns: 1fr; gap: 40px; }
+      nav { padding: 0 20px; }
+      .masthead { padding: 40px 20px 36px; }
+      .content-wrap { padding: 40px 20px; }
+      footer { padding: 32px 20px; }
+    }
+  
+    /* ── VIDEO HERO ── */
+    .video-hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--rule);
+    }
+    .video-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(11,28,42,0.45) 0%,
+        rgba(11,28,42,0.6) 60%,
+        rgba(11,28,42,0.88) 100%
+      );
+    }
+    .video-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 80px 48px 64px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @media (max-width: 700px) {
+      .video-hero { min-height: 70vh; }
+      .video-content { padding: 60px 24px 48px; }
+    }
+  </style>
+  <style>
+    .about-body {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 56px 48px 80px;
+    }
+    .about-body h2 {
+      font-family: var(--display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--parch);
+      margin: 48px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .about-body h2:first-of-type {
+      margin-top: 0;
+    }
+    .about-body p {
+      font-family: var(--serif);
+      font-size: 0.97rem;
+      line-height: 1.82;
+      color: var(--parch-dim);
+      margin-bottom: 18px;
+    }
+    .about-body p strong {
+      color: var(--parch);
+      font-weight: 700;
+    }
+    .about-body blockquote {
+      border-left: 3px solid var(--gilt);
+      margin: 28px 0;
+      padding: 4px 0 4px 24px;
+      font-style: italic;
+      color: var(--parch-dim);
+    }
+    .production-note {
+      background: rgba(198,144,48,0.05);
+      border: 1px solid rgba(198,144,48,0.18);
+      padding: 24px 28px;
+      margin: 36px 0;
+    }
+    .production-note h3 {
+      font-family: var(--sans);
+      font-size: 0.58rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--gilt);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .production-note p {
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--parch-dim);
+      margin-bottom: 12px;
+    }
+    .production-note p:last-child {
+      margin-bottom: 0;
+    }
+    @media (max-width: 700px) {
+      .about-body { padding: 36px 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">Cook in the Pacific <em>Then &amp; Now</em></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Episodes</a></li>
+    <li><a href="map.html">Maps</a></li>
+    <li><a href="https://philreevell-star.github.io/philreevell/">Phil Reevell</a></li>
+  </ul>
+</nav>
+
+<!-- Masthead -->
+<div style="background:var(--ocean-mid);border-bottom:1px solid var(--rule);">
+  <div style="max-width:1160px;margin:0 auto;padding:56px 48px 48px;">
+    <div style="font-family:var(--sans);font-size:0.6rem;letter-spacing:0.42em;text-transform:uppercase;color:var(--gilt);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+      <span style="display:inline-block;width:20px;height:1px;background:var(--gilt);opacity:0.7;"></span>
+      Cook in the Pacific · Then and Now
+    </div>
+    <h1 style="font-family:var(--display);font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--parch);line-height:1.05;margin-bottom:10px;">About the Project</h1>
+    <p style="font-family:var(--serif);font-size:1rem;font-style:italic;color:var(--parch-dim);">A nine-episode independent audio series in three voyages</p>
+  </div>
+</div>
+
+<div class="about-body">
+
+  <h2>How it started</h2>
+
+  <p>In early 2026, Phil Reevell spent three months in Fiji. He had been interested in the voyages of Captain James Cook since childhood — Cook was born in Marton, in what is now Middlesbrough, close to where Phil grew up, and the Cleveland Hills and the North Yorkshire coast that shaped Cook's early life were familiar territory. Being in the Pacific, in a country Cook had skirted without landing, seemed like the moment to do something with that interest.</p>
+
+  <p>The project began with Cook's own journals — the three-voyage edition edited by J.C. Beaglehole, still the definitive primary source — and with Peter Moore's <em>Endeavour: the ship and the attitude that changed the world</em>, which Phil had read before leaving for Fiji. The Fiji Museum in Suva, and the archipelago itself, provided the present-tense counterpart: what the Pacific looks like from inside it, two and a half centuries after the Resolution passed through.</p>
+
+  <p>The result is <strong>Cook in the Pacific: Then and Now</strong> — nine episodes across three voyages, each episode moving between Cook's account and the world his voyages helped to make.</p>
+
+  <h2>What the series is</h2>
+
+  <p>This is not a biography of Cook, though the first voyage follows his early life closely. It is an attempt to understand what the voyages actually did — to the Pacific, to the peoples Cook encountered, and to the way the world was subsequently organised. The <em>Then and Now</em> framing is literal: each episode holds Cook's own words alongside the present, asking what remains, what has changed, and what the distance between the two tells us.</p>
+
+  <p>The series is structured as three acts, one per voyage. The first three episodes — covering the Endeavour voyage of 1768 to 1771 — are the opening act. Episodes four to six follow the Resolution on the second voyage, which pushed further south than any ship had gone and returned through what is now Fiji. Episodes seven to nine cover the third voyage and its aftermath: Hawaii, 1779, and the world the voyages made possible.</p>
+
+  <h2>The research</h2>
+
+  <p>Primary research drew on Beaglehole's four-volume edition of the journals, his biography of Cook, and Anne Salmond's account of the first and second voyages. Phil interviewed <strong>Peter Moore</strong>, whose book on the Endeavour remains the most readable single-volume account of the first voyage.</p>
+
+  <p>The project also used AI research tools — specifically, Claude — to navigate the secondary literature and cross-reference the journals against the geography Phil was moving through in Fiji. This is a new kind of research relationship, and the series is honest about it: the AI does not write the scripts or generate the editorial judgements, but it made it possible for one person working independently to hold a large and complex body of material in view simultaneously.</p>
+
+  <div class="production-note">
+    <h3>A note on AI-generated material</h3>
+    <p>Several elements of this production are AI-generated, and it is worth being specific about which ones and why.</p>
+    <p>The <strong>images</strong> throughout the series were generated using AI tools working from Cook's journal descriptions and from the Fiji locations Phil moved through during the residency. There are almost no photographs of the places Cook saw as he saw them; AI generation from primary source description is one way of closing that gap.</p>
+    <p>The <strong>video</strong> — including the opening sequence on the Episode 1 page — is AI-generated from historical and geographic prompts, attempting to reconstruct the visual experience of the Endeavour arriving in Pacific waters.</p>
+    <p>The <strong>voices</strong> used for journal readings are AI-generated. This is a production choice made on grounds of cost and control: an independent production working outside the broadcast commission system cannot routinely hire actors. The AI voices are used for historical material only — Cook's words, Banks's words — not for the present-tense narration.</p>
+    <p>None of this is concealed. The series is made by one person, independently, using the tools available. That is part of what it is.</p>
+  </div>
+
+  <h2>Independent production</h2>
+
+  <p>Cook in the Pacific is an independent project — not a BBC commission, not made for broadcast. That is a deliberate choice rather than a default. Phil Reevell has made long-form audio journalism for the BBC and independently for many years; this series sits alongside that work, not instead of it.</p>
+
+  <p>The difference is that a commission shapes a project around what a broadcaster needs. This series was shaped around what the subject needed. Nine episodes across three voyages, with companion maps, annotated journal extracts, and AI-generated visual material, is not a format that fits easily into a broadcast schedule. Made independently, it can be what it wants to be.</p>
+
+  <p>The series is free to listen to. If you want to support independent audio journalism of this kind, the best thing you can do is tell someone else about it.</p>
+
+  <h2>The companion material</h2>
+
+  <p>Each episode has a shownotes page with chapter marks, sources, and context. The <a href="map.html">maps section</a> has interactive charts of all three voyages, with journal extracts at the relevant locations. The <a href="vatoa_turtle_island_annotated.html">Vatoa account</a> — a close reading of the four journal lines in which Cook sighted what is now Fijian territory without landing — is available as a standalone document.</p>
+
+  <p>More companion material will be added as the series progresses.</p>
+
+</div>
+
+<footer>
+  <div>
+    <div class="footer-brand">Cook in the Pacific</div>
+    <div class="footer-tagline">Then and Now · Phil Reevell</div>
+  </div>
+  <div>
+    <div class="footer-col-title">Episodes</div>
+    <ul class="footer-links">
+      <li><a href="ep1.html">1 · The Man from the Moors</a></li>
+      <li><a href="index.html#ep2">2 · The Honest Ship</a></li>
+      <li><a href="index.html#ep3">3 · Matavai Bay</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Maps</div>
+    <ul class="footer-links">
+      <li><a href="map.html">Maps hub</a></li>
+      <li><a href="voyage2_arc_map.html">Second Voyage arc</a></li>
+      <li><a href="vatoa_turtle_island_annotated.html">Vatoa account</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Links</div>
+    <ul class="footer-links">
+      <li><a href="https://philreevell-star.github.io/philreevell/">Phil Reevell</a></li>
+      <li><a href="mailto:phil@philreevell.com">phil@philreevell.com</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>
