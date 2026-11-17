@@ -235,6 +235,23 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
   button.voyage-label:hover { color: var(--gilt-lt, #e0ac3a); }
   .voyage-chevron { color: var(--gilt); font-size: 0.8rem; }
   .voyage-panel { margin-bottom: 8px; }
+
+/* Watch — clip from Episode 1 */
+.trailer{background:var(--ocean-deep);border-top:1px solid var(--rule-lt);border-bottom:1px solid var(--rule-lt);}
+.trailer-inner{max-width:1160px;margin:0 auto;padding:72px 48px;display:grid;grid-template-columns:1.35fr 1fr;gap:56px;align-items:center;}
+.tr-frame{position:relative;aspect-ratio:16/9;border:1px solid var(--rule);background:#000;}
+.tr-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.tr-kicker{font-family:var(--sans);font-size:0.62rem;letter-spacing:0.26em;text-transform:uppercase;color:var(--gilt);margin-bottom:18px;display:flex;align-items:center;gap:12px;font-weight:500;}
+.tr-kicker::before{content:'';width:28px;height:1px;background:var(--gilt);flex:none;}
+.tr-h{font-family:var(--display);font-size:clamp(1.6rem,2.6vw,2.2rem);line-height:1.2;color:var(--white);margin-bottom:18px;font-weight:400;}
+.tr-h em{color:var(--gilt);}
+.tr-p{font-family:var(--serif);font-size:1.02rem;line-height:1.7;color:var(--parch-dim);margin-bottom:28px;}
+.tr-p i{color:var(--parch);}
+.tr-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.tr-btn{font-family:var(--sans);font-size:0.66rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;padding:13px 22px;text-decoration:none;}
+.tr-btn.pri{background:var(--gilt);color:var(--ocean);}
+.tr-btn.sec{border:1px solid var(--rule);color:var(--parch);}
+@media(max-width:860px){.trailer-inner{grid-template-columns:1fr;gap:28px;padding:48px 16px;}}
 </style>
 </head>
 <body>
@@ -277,6 +294,21 @@ footer{background:#060d14;padding:40px 48px;border-top:1px solid var(--rule);dis
     <div class="stat"><div class="stat-label">1768 — 1779</div><div class="stat-value">11 years</div></div>
   </div>
 </div>
+
+<!-- WATCH: clip from Episode 1 (Peter Moore). To swap in a trailer, change the YouTube ID and remove start/end. -->
+<section class="trailer" id="watch">
+  <div class="trailer-inner">
+    <div class="tr-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/IWiJVarzwnc?start=1094&end=1112&rel=0" title="Peter Moore on the Endeavour and the Great Barrier Reef" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div>
+      <div class="tr-kicker">Watch · Episode 1</div>
+      <h2 class="tr-h">Peter Moore <em>in conversation</em></h2>
+      <p class="tr-p">The author of <i>Endeavour: The Ship and the Attitude that Changed the World</i> on how a Whitby collier and a farm labourer’s son came to sail into the Pacific — and what that first voyage represents, then and now.</p>
+      <div class="tr-btns"><a class="tr-btn pri" href="ep1.html">Watch the full interview</a><a class="tr-btn sec" href="ep1.html#listen">Listen to Episode 1</a></div>
+    </div>
+  </div>
+</section>
 
 <!-- SECTION 2: COOK AT THE CHART — dark split panel -->
 <div class="portrait-section" id="about">
