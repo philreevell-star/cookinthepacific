@@ -425,11 +425,27 @@
   </div>
 </div>
 
-<!-- Player — below video -->
+<!-- Watch + Listen — below video -->
+<style>
+.watch-wrap{max-width:960px;margin:0 auto;padding:44px 48px 8px;}
+.watch-label{font-family:var(--sans);font-size:0.62rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gilt);display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.watch-label::before{content:'';width:28px;height:1px;background:var(--gilt);flex:none;}
+.video-frame{position:relative;aspect-ratio:16/9;background:#000;border:1px solid var(--rule);}
+.video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.audio-alt{max-width:960px;margin:0 auto;padding:28px 48px 40px;}
+.audio-alt .player-label{color:var(--parch-dim);}
+@media(max-width:700px){.watch-wrap,.audio-alt{padding-left:16px;padding-right:16px;}}
+</style>
 <div style="background:var(--ocean-mid);border-bottom:1px solid var(--rule);">
-  <div style="max-width:800px;margin:0 auto;padding:36px 48px;">
+  <div class="watch-wrap">
+    <div class="watch-label">Watch Episode 1 · Peter Moore in conversation</div>
+    <div class="video-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/IWiJVarzwnc?rel=0" title="Cook in the Pacific — Episode 1: Peter Moore in conversation" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+  </div>
+  <div class="audio-alt">
     <div class="player-block">
-      <div class="player-label">Listen to Episode 1</div>
+      <div class="player-label">Prefer audio? Listen to Episode 1</div>
       <iframe width="100%" height="166" scrolling="no" frameborder="no"
         allow="autoplay; encrypted-media"
         src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2391641229&color=%23c69030&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
